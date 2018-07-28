@@ -55,10 +55,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
     compile("com.beust:klaxon:3.0.1")
-//    compile("com.h2database:h2")
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
-//    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-//    compile("org.springframework.boot:spring-boot-devtools")
     compile('com.google.api-client:google-api-client:1.23.0')
     compile('com.google.oauth-client:google-oauth-client-jetty:1.23.0')
     compile('com.google.apis:google-api-services-sheets:v4-rev516-1.23.0')
@@ -70,12 +67,3 @@ dependencies {
 
 compileJava.dependsOn(processResources)
 compileKotlin.dependsOn(processResources)
-
-//task uniqueDeps {
-////    runAfter {.
-//    project.configurations.compile.resolvedConfiguration.resolvedArtifacts.each {
-//        println it.id.componentIdentifier
-//    }
-////}
-//}
-
