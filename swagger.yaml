@@ -1,0 +1,155 @@
+swagger: "2.0"
+info:
+  description: "The Time Backend is a server for managing Team 1540's time tracking system."
+  version: "1.0.0"
+  title: "Time Backend"
+  contact:
+    email: "robinsonz@catlin.edu"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "robotics.catlin.edu"
+tags:
+- name: "clockapi"
+  description: "Secured API for clock-in/clock-out terminals"
+- name: "timesheet"
+  description: "Read-only API for personnel displays"
+schemes:
+- "https"
+paths:
+  /clockapi/clock:
+    post:
+      tags:
+      - "clockapi"
+      summary: "Clock a user in or out"
+      operationId: "doClock"
+      parameters:
+      - in: "query"
+        name: "user"
+        description: "The user ID"
+        required: true
+        type: string
+      - in: "query"
+        name: "clockingIn"
+        description: "Whether the user is clocking in or out"
+        required: true
+        type: boolean
+      description: ""
+      consumes:
+      - "application/json"
+      - "application/xml"
+      responses:
+        200:
+          description: "Successful clock-in or clock-out"
+          schema:
+            $ref: '#/definitions/ClockSuccess'
+        404:
+          description: "Clock-in or clock-out errored"
+          schema:
+            $ref: '#/definitions/ClockError'
+      security:
+        - timeclock-auth: []
+  /clockapi/id:
+    get:
+      operationId: "getId"
+      tags:
+      - "clockapi"
+      summary: "Get a user's ID given their name"
+      parameters:
+      - in: "query"
+        name: "name"
+        description: "The user's name"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Found user"
+          schema:
+            $ref: '#/definitions/User'
+        404:
+          description: "User was not found"
+      security:
+        - timeclock-auth: []
+  /clockapi/name:
+    get:
+      operationId: "getName"
+      tags:
+      - "clockapi"
+      summary: "Get a user's name given their ID"
+      parameters:
+      - in: "query"
+        name: "id"
+        description: "The user's ID"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Found user"
+          schema:
+            $ref: '#/definitions/User'
+        404:
+          description: "User was not found"
+      security:
+        - timeclock-auth: []
+  /timesheet/loggedin:
+    get:
+      operationId: "getLoggedIn"
+      tags:
+      - "timesheet"
+      summary: "Get currently logged in users"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: '#/definitions/LoggedIn'
+securityDefinitions:
+  timeclock-auth:
+    type: basic
+definitions:
+  User:
+    type: "object"
+    required:
+      - "id"
+      - "name"
+    properties:
+      id:
+        type: string
+        description: "The user's ID"
+        example: "254"
+      name:
+        type: string
+        description: "The user's name"
+        example: "Dean Kamen"
+  LoggedIn:
+    type: "object"
+    example:
+      Dean Kamen: "1526615236234"
+      Dale Yocum: "1526926457910"
+      Woodie Flowers: "1526926451234"
+    additionalProperties:
+      description: "A map of each user's name to the time (in ms) since the Unix epoch when they clocked in."
+      type: string
+
+  ClockError:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      message:
+        type: string
+        enum:
+          - "not_found"
+          - "repeat_clock"
+          - "never_clocked"
+          - "unknown"
+        example: "not_found"
+        description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is attempting to clock in and has already clocked in (or vice versa), and 'never_clocked' if the user has never clocked in and is attempting to clock out."
+  ClockSuccess:
+    type: "object"
+    required:
+      - "time"
+    properties:
+      time:
+        type: string
+        example: "1526615236234"
+        description: "The UNIX epoch timestamp (in milliseconds) that was recorded server-side."
