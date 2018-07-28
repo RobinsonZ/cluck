@@ -61,7 +61,7 @@ The backend is OS-independent and runs anywhere Java and MongoDB run, but many c
 
 5. Disable scheduled log-outs (if desired)
 
-    By default, at 11:59:59 PM local time, the timeclock will log out any logged-in users and send them an email notifying them that they forgot to log out. This can be disabled if desired.
+    By default, at 11:59:59 PM system time, the timeclock will log out any logged-in users and send them an email notifying them that they forgot to log out. This can be disabled if desired.
 
     Under `timeclock`, add:
 
