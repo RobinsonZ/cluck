@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
-import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
