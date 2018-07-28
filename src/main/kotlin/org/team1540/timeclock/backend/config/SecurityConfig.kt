@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint
 import javax.servlet.http.HttpServletRequest
@@ -57,7 +58,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     fun configureGlobal(auth: AuthenticationManagerBuilder) {
         auth.inMemoryAuthentication()
-                .passwordEncoder(NoOpPasswordEncoder.getInstance())
+                .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder())
                 .withUser(authConfig.timeclockUsername).password(authConfig.timeclockPassword).roles("TIMECLOCK", "TIMESHEET")
                 .and().apply {
                     if (authConfig.secureTimesheetApi) {

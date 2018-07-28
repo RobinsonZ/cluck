@@ -40,10 +40,12 @@ The backend is OS-independent and runs anywhere Java and MongoDB run, but many c
     timeclock:
       auth:
         timeclock-username: timeclock
-        timeclock-password: password # should be something other than password
+        timeclock-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
     ```
 
     These credentials will be necessary for timeclock clients (anyone accessing API methods under ``/clockapi/``) to log in.
+
+    Note that the password is not actually the password but an encoded form. See the Configuring Passwords section of this manual for more info.
 
 4. Configure timesheet authentication (optional, recomended for publicly exposed servers)
 
@@ -52,7 +54,7 @@ The backend is OS-independent and runs anywhere Java and MongoDB run, but many c
     ```yaml
     secure-timesheet-api: true
     timesheet-username: timesheet
-    timesheet-password: password # again, please do not actually set your password to "password"
+    timesheet-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
     ```
 
     If configured, timesheet clients (anyone accessing API methods under `/timesheet/`) will need to authenticate with those credentials.
