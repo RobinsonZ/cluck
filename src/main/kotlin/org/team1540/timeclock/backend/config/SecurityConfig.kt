@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
+import org.team1540.timeclock.backend.services.MongoUserDetailsService
 
 const val REALM = "TIMECLOCK"
 
@@ -16,6 +17,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
     lateinit var authConfig: AuthenticationConfig
+
+    @Autowired
+    private lateinit var mongoUserDetailsService: MongoUserDetailsService
 
     override fun configure(web: WebSecurity) {
     }
@@ -30,21 +34,13 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                         permitAll()
                     }
                 }.antMatchers("/clockapi/**").hasRole("TIMECLOCK")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
     @Autowired
     fun configureGlobal(auth: AuthenticationManagerBuilder) {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder())
-                .withUser(authConfig.timeclockUsername).password(authConfig.timeclockPassword).roles("TIMECLOCK", "TIMESHEET")
-                .and().apply {
-                    if (authConfig.secureTimesheetApi) {
-                        withUser(authConfig.timesheetUsername).password(authConfig.timesheetPassword)
-                    } else {
-                        and()
-                    }
-                }
+        auth.userDetailsService(mongoUserDetailsService).passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder())
     }
 }

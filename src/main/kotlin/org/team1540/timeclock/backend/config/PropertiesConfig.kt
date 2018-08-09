@@ -60,6 +60,10 @@ class AuthenticationConfig {
      */
     @Value("")
     lateinit var timesheetPassword: String
+    /**
+     * Password to authenticate to the admin API, if it has been enabled.
+     */
+    lateinit var adminPassword: String
 }
 
 @ConfigurationProperties("timeclock.autologout")
