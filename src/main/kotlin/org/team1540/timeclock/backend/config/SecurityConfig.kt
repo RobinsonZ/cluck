@@ -27,13 +27,8 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/*").permitAll()
-                .antMatchers("/timesheet/**").run {
-                    if (authConfig.secureTimesheetApi) {
-                        hasRole("TIMESHEET")
-                    } else {
-                        permitAll()
-                    }
-                }.antMatchers("/clockapi/**").hasRole("TIMECLOCK")
+                .antMatchers("/timesheet/**").hasRole("TIMESHEET")
+                .antMatchers("/clockapi/**").hasRole("TIMECLOCK")
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
