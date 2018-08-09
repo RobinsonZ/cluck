@@ -47,13 +47,14 @@ class AdminController {
     }
 
     @GetMapping("/admin/allcredentials")
-    fun getAllCredentials() {
-        mapOf("credentials" to adminToolsService.getAllCredentials().map { StrippedCredential(it) })
-    }
+    fun getAllCredentials() = mapOf("credentials" to adminToolsService.getAllCredentials().map { StrippedCredential(it) })
 
     @GetMapping("/admin/allusers")
-    fun getAllUsers() {
-        mapOf("users" to adminToolsService.getAllUsers().map { StrippedUser(it) })
+    fun getAllUsers() = mapOf("users" to adminToolsService.getAllUsers().map { StrippedUser(it) })
+
+    @PostMapping("/admin/reset")
+    fun resetAllHours() {
+        adminToolsService.resetAllHours()
     }
 
     private fun <R : ResponseEntity<*>> doServiceAction(action: () -> R): ResponseEntity<*> {
