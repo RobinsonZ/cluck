@@ -30,17 +30,23 @@ The backend connects to Google Sheets, and outputs hour records for each person 
 
 At 23:59:59 system time each day, the backend will check for any users who have logged in but did not log out. It will then log them out and send an email to their address in the database.
 
+### Administration
+
+The backend can be configured via API calls; these calls can add/remove users, add/remove sets of valid credentials for admin/timeclock/timesheet APIs, and reset hours on a per-user or global basis.
+
 ## The API
 
-The full API consists of two sets of method calls: `clockapi` for timeclock terminals, and `timesheet` for displays of who is logged in at a given time. The [OpenAPI](https://www.openapis.org/) specification is in `swagger.yml` in the root of the project and contains complete documentation for all API methods.
+The full API consists of three sets of method calls: `admin` for administraion, `clockapi` for timeclock terminals, and `timesheet` for displays of who is logged in at a given time. The [OpenAPI](https://www.openapis.org/) specification is in `swagger.yml` in the root of the project and contains complete documentation for all API methods.
 
 All requests to the API must be made using [HTTPS](https://en.wikipedia.org/wiki/HTTPS).
 
 ### Authentication
 
-Credentials are provided via [HTTP Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication#Security).
+Credentials are provided via [HTTP Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication#Security). Accounts with the `ADMIN` access level can create other accounts. An account with username `admin` and a configurable password is the only account out-of-the-box; this set of credentials must be used to create additional logins for timeclocks and timesheets. If this account is deleted (by another account it created with `ADMIN` access) it will be recreated on server restart. As the API is entirely stateless, multiple clients may use the same set of credentials. 
 
-By default, only the `clockapi` set of methods requires authentication, though authentication can also be required for `timesheet` methods by setting the `timeclock.auth.secure-timesheet-api` property to `true`. Note that if `timesheet` authentication is enabled, `clockapi` credentials will also be accepted for `timesheet` methods.
+#### Access Levels
+
+The API has three access levels: `ADMIN`, `TIMECLOCK`, and `TIMESHEET`. These correspond to the three sets of methods. Accounts with the `ADMIN` access level may access all API methods; `TIMECLOCK` accounts may access `clockapi` and `timesheet` methods, and `TIMESHEET` accounts can only access `timesheet` methods.
 
 ### Password Encoding
 
@@ -50,9 +56,13 @@ The backend supports multiple encoding algorithms through the use of a [Delegati
 
 The backend stores data by connecting to a [MongoDB](https://www.mongodb.com/) instance through [Spring Data MongoDB](https://projects.spring.io/spring-data-mongodb/). As such, with proper configuration, it can connect to a local instance (default), a remote instance over TCP, or a cloud-based solution via MongoDB Atlas. (Consult the Spring docs for details.)
 
+The name of the database used is set during configuration.
+
 ### Schema
 
-The name of the database used is set during configuration; within that database, the backend stores all relevant data in a collection named `users`.
+#### User Info
+
+User info is stored in a collection called `users`.
 
 Each user document contains the following fields:
 
@@ -63,6 +73,21 @@ Each user document contains the following fields:
 - `clockEvents`: A list of clock event (clock-in or clock-out) records. Each clock event document contains the following fields:
   - `timestamp`: A signed 64-bit integer containing the system time of the clock event, in milliseconds from the Unix epoch.
   - `clockingIn`: A boolean specifying whether the event was a clock-in (`true`) or a clock-out (`false`).
+
+#### Credential Info
+
+Credentials (accounts) are stored in a collection called `credentials`.
+
+Each credential document contains the following fields:
+
+* `_id`: The username of the credential.
+* `password`: The encoded (hashed) password of the credential.
+* `accessLevel`: The access level of the credential (`TIMECLOCK`, `TIMESHEET`, or `ADMIN`).
+* `_class`:This field is used internally by Spring Data. It should always be set to the string `"org.team1540.timeclock.backend.data.Credential"`.
+
+### Time Cache
+
+The backend uses an additional collection called `timecache` to cache certain data. All you need to know is  that you shouldn't touch it.
 
 ## Spring Configuration Properties
 
@@ -75,8 +100,5 @@ The backend has [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) as
 - `timeclock.sheets.hours-col`:  The column of the spreadsheet containing the hours: the backend will update this column.
 - `timeclock.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
 - `timeclock.auth.timeclock-username`: The username used for `clockapi` API methods.
-- `timeclock.auth.timeclock-password`: The password used for `clockapi` API methods. This should be encoded as described in the Authentication section.
-- `timeclock.auth.secure-timesheet-api`: Whether to require authentication to access `timesheet` API methods. Defaults to `false`
-- `timeclock.auth.timesheet-username`: The username used for `timesheet` API methods. Has no effect unless `secure-timesheet-api` is `true`.
-- `timeclock.auth.timesheet-password`: The password used for `timesheet` API methods. Has no effect unless `secure-timesheet-api` is `true`. This should be encoded as described in the Authentication section.
+- `timeclock.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
 - `timeclock.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
