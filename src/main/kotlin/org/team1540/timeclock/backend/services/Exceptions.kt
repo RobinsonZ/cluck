@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
 open class AdminToolsException(message: String, val httpStatus: HttpStatus) : Exception(message) {
-    val responseEntity get() = ResponseEntity(mapOf("message" to message), HttpStatus.NOT_FOUND)
+    val responseEntity get() = ResponseEntity(mapOf("message" to message), httpStatus)
 }
 
 class NoSuchUserException : AdminToolsException("not_found", HttpStatus.NOT_FOUND)
