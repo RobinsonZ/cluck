@@ -64,13 +64,19 @@ class SheetsHourCountUpdater : HourCountUpdater {
     override fun setHours(user: User, hourCount: Double) {
         logger.debug { "Setting $user's hour count to $hourCount hours" }
         // find the user's row
+        var foundUser = false
         sheets.spreadsheets().values().get(config.sheet, config.nameRange).setMajorDimension("COLUMNS").execute()
                 .getValues()[0].forEachIndexed { i, value ->
             if (value == user.name) {
+                foundUser = true
                 sheets.spreadsheets().values().update(config.sheet, "${config.hoursCol}${i + config.hoursRowOffset}", ValueRange().setValues(listOf(listOf(hourCount)))).setValueInputOption("RAW").execute()
             }
         }
-        logger.debug { "Successfully set $user's hour count" }
+        if (foundUser) {
+            logger.debug { "Successfully set $user's hour count" }
+        } else {
+            logger.warn { "Attempted to set $user's hour count but could not find them on the spreadsheet" }
+        }
     }
 
     companion object {
