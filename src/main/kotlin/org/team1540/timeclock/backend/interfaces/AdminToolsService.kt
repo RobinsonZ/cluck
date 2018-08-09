@@ -1,23 +1,31 @@
 package org.team1540.timeclock.backend.interfaces
 
-import org.team1540.timeclock.backend.data.Session
+import org.team1540.timeclock.backend.data.AccessLevel
+import org.team1540.timeclock.backend.data.Credential
 import org.team1540.timeclock.backend.data.User
+import org.team1540.timeclock.backend.services.CredentialAlreadyExistsException
+import org.team1540.timeclock.backend.services.NoSuchCredentialException
 import org.team1540.timeclock.backend.services.NoSuchUserException
+import org.team1540.timeclock.backend.services.UserAlreadyExistsException
 
 interface AdminToolsService {
+
+    @Throws(UserAlreadyExistsException::class)
     fun addUser(user: User)
 
     @Throws(NoSuchUserException::class)
     fun removeUser(id: String)
 
-    fun getHoursForUser(user: User): Long
+    @Throws(CredentialAlreadyExistsException::class)
+    fun addCredentialSet(level: AccessLevel, username: String, password: String)
 
-    fun getAllHours(): Map<User, Long>
+    @Throws(NoSuchCredentialException::class)
+    fun removeCredentialSet(username: String)
 
-    fun getUserInfo(id: String): User
+    fun getAllCredentials(): Set<Credential>
 
-    fun voidLastClock(id: String)
+    fun resetAllHours()
 
-    fun getAllSessions(id: String): List<Session>
+    fun getAllUsers(): Set<User>
 }
 

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.team1540.timeclock.backend.convertToISODate
-import org.team1540.timeclock.backend.data.User
 import org.team1540.timeclock.backend.data.UserRepository
 import org.team1540.timeclock.backend.interfaces.HoursTracker
 import org.team1540.timeclock.backend.services.ClockInOutException
@@ -62,6 +61,3 @@ class TimeclockController {
     }
 }
 
-data class StrippedUser(val name: String, val id: String) {
-    constructor(user: User) : this(user.name, user.id)
-}
