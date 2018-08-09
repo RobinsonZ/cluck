@@ -67,12 +67,16 @@ class AdminToolsServiceImpl : AdminToolsService {
 
     override fun getAllCredentials(): Set<Credential> {
         logger.debug { "Getting all credentials" }
-        return credentialRepository.findAll().toSet()
+        val credentials = credentialRepository.findAll().toSet()
+        logger.debug { "Found ${credentials.size} credentials" }
+        return credentials
     }
 
     override fun getAllUsers(): Set<User> {
         logger.debug { "Getting all users" }
-        return userRepository.findAll().toSet()
+        val users = userRepository.findAll().toSet()
+        logger.debug { "Found ${users.size} users" }
+        return users
     }
 
     override fun resetAllHours() {
