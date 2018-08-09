@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "The Time Backend is a server for managing Team 1540's time tracking system."
+  description: "The CLUCK (Common Lab Use Clock Kit) is Team 1540's time tracking system. This document details the API endpoints of the CLUCK server."
   version: "1.0.0"
-  title: "Time Backend"
+  title: "CLUCK API"
   contact:
     email: "robinsonz@catlin.edu"
   license:
@@ -14,6 +14,8 @@ tags:
   description: "Secured API for clock-in/clock-out terminals"
 - name: "timesheet"
   description: "Read-only API for personnel displays"
+- name: "admin"
+  description: "Administrative API for managing users and terminals"
 schemes:
 - "https"
 paths:
@@ -42,13 +44,32 @@ paths:
         200:
           description: "Successful clock-in or clock-out"
           schema:
-            $ref: '#/definitions/ClockSuccess'
+            type: "object"
+            required:
+            - "time"
+            properties:
+              time:
+                type: string
+                example: "1526615236234"
+                description: "The UNIX epoch timestamp (in milliseconds) that was recorded server-side."
         404:
           description: "Clock-in or clock-out errored"
           schema:
-            $ref: '#/definitions/ClockError'
+            type: "object"
+            required:
+            - "message"
+            properties:
+              message:
+                type: string
+                enum:
+                - "not_found"
+                - "repeat_clock"
+                - "never_clocked"
+                - "unknown"
+                example: "not_found"
+                description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is attempting to clock in and has already clocked in (or vice versa), and 'never_clocked' if the user has never clocked in and is attempting to clock out."
       security:
-        - timeclock-auth: []
+      - timeclock-auth: []
   /clockapi/id:
     get:
       operationId: "getId"
@@ -69,7 +90,7 @@ paths:
         404:
           description: "User was not found"
       security:
-        - timeclock-auth: []
+      - timeclock-auth: []
   /clockapi/name:
     get:
       operationId: "getName"
@@ -90,7 +111,7 @@ paths:
         404:
           description: "User was not found"
       security:
-        - timeclock-auth: []
+      - timeclock-auth: []
   /timesheet/loggedin:
     get:
       operationId: "getLoggedIn"
@@ -101,16 +122,233 @@ paths:
         200:
           description: "Success"
           schema:
-            $ref: '#/definitions/LoggedIn'
+            type: "object"
+            example:
+              Dean Kamen: "1526615236234"
+              Dale Yocum: "1526926457910"
+              Woodie Flowers: "1526926451234"
+            additionalProperties:
+              description: "A map of each user's name to the time (in ms) since the Unix epoch when they clocked in."
+              type: string
+  /admin/addcredential:
+    post:
+      operationId: "addCredential"
+      tags:
+      - "admin"
+      summary: "Add a credential"
+      parameters:
+      - in: body
+        name: "credential"
+        schema:
+          type: "object"
+          required:
+          - "accessLevel"
+          - "username"
+          - "password"
+          properties:
+            accessLevel:
+              type: string
+              enum:
+              - "ADMIN"
+              - "TIMECLOCK"
+              - "TIMESHEET"
+              example: "TIMECLOCK"
+              description: "The access level of the credentials."
+            username:
+              type: string
+              description: "The login username for the credentials."
+            password:
+              type: string
+              description: "The login password for the credentials."
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                - cred_already_exists
+                example: cred_already_exists
+      security:
+      - admin-auth: []
+  /admin/removecredential:
+    post:
+      operationId: removeCredential
+      tags:
+      - "admin"
+      summary: "Remove a credential"
+      parameters:
+      - in: query
+        name: username
+        type: string
+        description: "The username of the credential to remove."
+        required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                - cred_not_found
+                example: cred_not_found
+      security:
+      - admin-auth: []
+  /admin/adduser:
+    post:
+      operationId: addUser
+      tags:
+      - "admin"
+      summary: "Add a user"
+      parameters:
+      - in: query
+        name: id
+        type: string
+        description: "The ID of the user to add."
+        required: true
+      - in: query
+        name: name
+        type: string
+        description: "The user's name."
+        required: true
+      - in: query
+        name: email
+        type: string
+        description: "The user's email address."
+        required: true
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                - already_exists
+                example: already_exists
+      security:
+      - admin-auth: []
+  /admin/removeuser:
+    post:
+      operationId: removeUser
+      tags:
+      - "admin"
+      summary: "Remove a user"
+      parameters:
+      - in: query
+        name: id
+        type: string
+        description: "The ID of the user to remove."
+        required: true
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                - not_found
+                example: not_found
+      security:
+      - admin-auth: []
+  /admin/allusers:
+    get:
+      operationId: getUsers
+      tags:
+      - "admin"
+      summary: "Get all user names and IDs"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "object"
+            required:
+            - "users"
+            properties:
+              users:
+                type: array
+                description: "All users"
+                items:
+                  $ref: "#/definitions/User"
+      security:
+      - admin-auth: []
+  /admin/allcredentials:
+    get:
+      operationId: getCredentials
+      tags:
+      - "admin"
+      summary: "Get all credential names and access levels"
+      description: "Get all credentials with their username and access level. Passwords cannot be accessed, as the backend only stores a hashed form."
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "object"
+            required:
+            - "credentials"
+            properties:
+              credentials:
+                type: array
+                description: "All credentials"
+                items:
+                  type: object
+                  required:
+                  - "username"
+                  - "accessLevel"
+                  properties:
+                    username:
+                      type: string
+                      description: "The username for the credential"
+                      example: "timeclock"
+                    accessLevel:
+                      type: string
+                      enum:
+                      - "ADMIN"
+                      - "TIMECLOCK"
+                      - "TIMESHEET"
+                      example: "TIMECLOCK"
+      security:
+      - admin-auth: []
+  /admin/reset:
+    post:
+      tags:
+      - "admin"
+      summary: "Reset all users' hour counts"
+      operationId: resetHours
+      responses:
+        200:
+          description: "Success"
+      security:
+      - admin-auth: []
+
 securityDefinitions:
   timeclock-auth:
     type: basic
+    description: "Authorization for clockapi methods"
+  admin-auth:
+    type: basic
+    description: "Authorization for admin methods"
 definitions:
   User:
     type: "object"
     required:
-      - "id"
-      - "name"
+    - "id"
+    - "name"
     properties:
       id:
         type: string
@@ -120,36 +358,3 @@ definitions:
         type: string
         description: "The user's name"
         example: "Dean Kamen"
-  LoggedIn:
-    type: "object"
-    example:
-      Dean Kamen: "1526615236234"
-      Dale Yocum: "1526926457910"
-      Woodie Flowers: "1526926451234"
-    additionalProperties:
-      description: "A map of each user's name to the time (in ms) since the Unix epoch when they clocked in."
-      type: string
-
-  ClockError:
-    type: "object"
-    required:
-    - "message"
-    properties:
-      message:
-        type: string
-        enum:
-          - "not_found"
-          - "repeat_clock"
-          - "never_clocked"
-          - "unknown"
-        example: "not_found"
-        description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is attempting to clock in and has already clocked in (or vice versa), and 'never_clocked' if the user has never clocked in and is attempting to clock out."
-  ClockSuccess:
-    type: "object"
-    required:
-      - "time"
-    properties:
-      time:
-        type: string
-        example: "1526615236234"
-        description: "The UNIX epoch timestamp (in milliseconds) that was recorded server-side."
