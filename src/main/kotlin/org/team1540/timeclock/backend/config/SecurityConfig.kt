@@ -1,18 +1,13 @@
 package org.team1540.timeclock.backend.config
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 const val REALM = "TIMECLOCK"
 
@@ -21,21 +16,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
     lateinit var authConfig: AuthenticationConfig
-
-    val basicAuthenticationEntryPoint
-        @Bean get() = RestAuthEntryPoint()
-
-    class RestAuthEntryPoint : BasicAuthenticationEntryPoint() {
-        override fun commence(request: HttpServletRequest?, response: HttpServletResponse?, authException: AuthenticationException?) {
-            response?.status = HttpServletResponse.SC_UNAUTHORIZED;
-            response?.addHeader("WWW-Authenticate", "Basic realm=$realmName");
-        }
-
-        override fun afterPropertiesSet() {
-            realmName = REALM
-            super.afterPropertiesSet()
-        }
-    }
 
     override fun configure(web: WebSecurity) {
     }
@@ -50,7 +30,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                         permitAll()
                     }
                 }.antMatchers("/clockapi/**").hasRole("TIMECLOCK")
-                .and().httpBasic().realmName(REALM).authenticationEntryPoint(basicAuthenticationEntryPoint)
+                .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
