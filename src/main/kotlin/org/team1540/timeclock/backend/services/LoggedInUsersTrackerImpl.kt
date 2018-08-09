@@ -19,7 +19,7 @@ class LoggedInUsersTrackerImpl : LoggedInUsersTracker {
         // TODO: Find a better way of doing this than iterating through every user
         logger.debug { "Processing request for logged in users" }
         return users.findAll()
-                .filter { it.clockEvents.sortedBy { it.timestamp }.last().clockingIn }
+                .filter { it.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false }
                 .associate { it.name to it.clockEvents.last().timestamp.toString() }
                 .also { logger.debug { "${it.size} logged-in users found" } }
     }
