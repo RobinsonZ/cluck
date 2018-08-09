@@ -2,12 +2,14 @@ package org.team1540.timeclock.backend.controllers
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.team1540.timeclock.backend.data.AccessLevel
 import org.team1540.timeclock.backend.data.User
 import org.team1540.timeclock.backend.interfaces.AdminToolsService
 import org.team1540.timeclock.backend.services.AdminToolsException
+import org.team1540.timeclock.backend.services.ClockInOutException
 
 @RestController
 class AdminController {
@@ -55,6 +57,18 @@ class AdminController {
     @PostMapping("/admin/reset")
     fun resetAllHours() {
         adminToolsService.resetAllHours()
+    }
+
+    @PostMapping("/admin/voidclock")
+    fun void(@RequestParam id: String): ResponseEntity<Any> {
+        return try {
+            adminToolsService.voidLastClock(id)
+            ResponseEntity.ok().build<Any>()
+        } catch (e: ClockInOutException) {
+            logger.debug { "Void request for user $id errored due to bad input: ${e.message}" }
+
+            ResponseEntity(mapOf("message" to e.message), HttpStatus.NOT_FOUND)
+        }
     }
 
     private fun <R : ResponseEntity<*>> doServiceAction(action: () -> R): ResponseEntity<*> {

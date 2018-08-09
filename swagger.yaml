@@ -362,6 +362,39 @@ paths:
           description: "Success"
       security:
       - admin-auth: []
+  /admin/voidclock:
+    post:
+      tags:
+      - "admin"
+      summary: "Clock a user out without incrementing their hours"
+      operationId: "voidClock"
+      parameters:
+      - name: "id"
+        in: query
+        type: string
+        description: "The ID of the user to void."
+        required: true
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Failure"
+          schema:
+            type: "object"
+            required:
+            - "message"
+            properties:
+              message:
+                type: string
+                enum:
+                - "not_found"
+                - "repeat_clock"
+                - "never_clocked"
+                - "unknown"
+                example: "not_found"
+                description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is already clocked out, and 'never_clocked' if the user has never clocked in."
+      security:
+      - timeclock-auth: []
 
 securityDefinitions:
   timeclock-auth:

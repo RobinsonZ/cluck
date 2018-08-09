@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.stereotype.Service
+import org.team1540.timeclock.backend.convertToISODate
 import org.team1540.timeclock.backend.data.*
 import org.team1540.timeclock.backend.interfaces.AdminToolsService
 import org.team1540.timeclock.backend.interfaces.HourCountUpdater
@@ -102,6 +103,28 @@ class AdminToolsServiceImpl : AdminToolsService {
             hourCountUpdater.setHours(newUser, 0.0)
         }
         logger.info { "Reset complete" }
+    }
+
+    override fun voidLastClock(id: String) {
+        logger.debug { "Voiding last clock-in for user $id" }
+        val user: User? = userRepository.findById(id).orElse(null)
+        if (user == null) {
+            logger.debug { "User $id was not found" }
+            throw UserNotFoundException()
+        }
+
+        val lastClockEvent = user.clockEvents.sortedBy { it.timestamp }.lastOrNull()
+        if (lastClockEvent?.clockingIn == false) {
+            // already clocked in
+            logger.debug { "User $id already clocked out at time ${lastClockEvent.timestamp} (${lastClockEvent.timestamp.convertToISODate()})" }
+            throw AlreadyClockedInOrOutException()
+        } else if (lastClockEvent == null) {
+            logger.debug { "User $id never clocked in" }
+            throw NeverClockedInException()
+        }
+
+        userRepository.save(user.copy(clockEvents = user.clockEvents.sortedBy { it.timestamp }.dropLast(1)))
+        logger.debug { "Voided last clock-in for user $user" }
     }
 
 }
