@@ -26,6 +26,8 @@ interface AdminToolsService {
 
     fun resetAllHours()
 
-    fun getAllUsers(): Set<User>
+    fun getAllUsers(): Set<UserWithInfo>
+
+    data class UserWithInfo(val id: String, val name: String, val email: String, val clockedIn: Boolean, val timeIn: Long)
 }
 

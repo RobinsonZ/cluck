@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.team1540.timeclock.backend.data.*
 import org.team1540.timeclock.backend.interfaces.AdminToolsService
 import org.team1540.timeclock.backend.interfaces.HourCountUpdater
+import org.team1540.timeclock.backend.interfaces.HoursCounter
 
 @Service
 class AdminToolsServiceImpl : AdminToolsService {
@@ -19,6 +20,11 @@ class AdminToolsServiceImpl : AdminToolsService {
     private lateinit var userRepository: UserRepository
     @Autowired
     private lateinit var hourCountUpdater: HourCountUpdater
+    @Autowired
+    private lateinit var timeCacheEntryRepository: TimeCacheEntryRepository
+    @Autowired
+    private lateinit var hoursCounter: HoursCounter
+
 
     override fun addCredentialSet(level: AccessLevel, username: String, password: String) {
         logger.debug { "Adding new credential set \"$username\" with access level $level" }
@@ -72,11 +78,21 @@ class AdminToolsServiceImpl : AdminToolsService {
         return credentials
     }
 
-    override fun getAllUsers(): Set<User> {
+    override fun getAllUsers(): Set<AdminToolsService.UserWithInfo> {
         logger.debug { "Getting all users" }
         val users = userRepository.findAll().toSet()
         logger.debug { "Found ${users.size} users" }
-        return users
+
+        return users.map { user ->
+            // check the cache; if we get a cache miss recalculate
+            AdminToolsService.UserWithInfo(
+                    user.id,
+                    user.name,
+                    user.email,
+                    user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false,
+                    timeCacheEntryRepository.findById(user.id).map { it.time }.orElse(hoursCounter.getTotalMs(user))
+            )
+        }.toSet()
     }
 
     override fun resetAllHours() {

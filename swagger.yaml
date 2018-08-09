@@ -284,7 +284,34 @@ paths:
                 type: array
                 description: "All users"
                 items:
-                  $ref: "#/definitions/User"
+                  type: object
+                  required:
+                  - "name"
+                  - "id"
+                  - "email"
+                  - "clockedIn"
+                  - "timeIn"
+                  properties:
+                    id:
+                      type: string
+                      description: "The user's ID"
+                      example: "1540"
+                    name:
+                      type: string
+                      description: "The user's name"
+                      example: "Dale Yocum"
+                    email:
+                      type: string
+                      description: "The user's email"
+                      example: "yocumd@catlin.edu"
+                    clockedIn:
+                      type: boolean
+                      description: "Whether or not the user is clocked in"
+                      example: "true"
+                    timeIn:
+                      type: string
+                      example: "3564606"
+                      description: "The total number of milliseconds the user has spent clocked in."
       security:
       - admin-auth: []
   /admin/allcredentials:

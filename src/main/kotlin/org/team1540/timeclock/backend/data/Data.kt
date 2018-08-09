@@ -26,3 +26,9 @@ interface CredentialRepository : MongoRepository<Credential, String>
 enum class AccessLevel(vararg val roleNames: String) {
     NONE(), TIMESHEET("TIMESHEET"), TIMECLOCK("TIMECLOCK", "TIMESHEET"), ADMIN("ADMIN", "TIMECLOCK", "TIMESHEET")
 }
+
+// cache
+@Document(collection = "timecache")
+data class TimeCacheEntry(val id: String = "", val time: Long = -1)
+
+interface TimeCacheEntryRepository : MongoRepository<TimeCacheEntry, String>

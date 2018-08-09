@@ -4,8 +4,9 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.team1540.timeclock.backend.data.TimeCacheEntry
+import org.team1540.timeclock.backend.data.TimeCacheEntryRepository
 import org.team1540.timeclock.backend.data.User
-import org.team1540.timeclock.backend.data.UserRepository
 import org.team1540.timeclock.backend.interfaces.HoursCounter
 import java.util.concurrent.CompletableFuture
 
@@ -13,6 +14,8 @@ import java.util.concurrent.CompletableFuture
 class HoursCounterImpl : HoursCounter {
 
     val logger = KotlinLogging.logger {}
+    @Autowired
+    private lateinit var timeCacheEntryRepository: TimeCacheEntryRepository
 
     @Async
     override fun getTotalMsAsync(user: User): CompletableFuture<Long> {
@@ -42,6 +45,10 @@ class HoursCounterImpl : HoursCounter {
                     } else {
                         logger.debug { "User $user has spent $it ms (${(it / 1000.0) / 3600} hrs) clocked in" }
                     }
+                }.also {
+                    // cache it
+                    it?.let { timeCacheEntryRepository.save(TimeCacheEntry(user.id, it)) }
                 }.let { CompletableFuture.completedFuture(it ?: 0L) }
+
     }
 }

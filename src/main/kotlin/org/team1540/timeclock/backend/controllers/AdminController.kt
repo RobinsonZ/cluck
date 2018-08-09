@@ -50,7 +50,7 @@ class AdminController {
     fun getAllCredentials() = mapOf("credentials" to adminToolsService.getAllCredentials().map { StrippedCredential(it) })
 
     @GetMapping("/admin/allusers")
-    fun getAllUsers() = mapOf("users" to adminToolsService.getAllUsers().map { StrippedUser(it) })
+    fun getAllUsers() = mapOf("users" to adminToolsService.getAllUsers())
 
     @PostMapping("/admin/reset")
     fun resetAllHours() {
