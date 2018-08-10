@@ -2,6 +2,9 @@ package org.team1540.timeclock.backend.interfaces
 
 import org.team1540.timeclock.backend.services.ClockInOutException
 
+/**
+ * A service that can clock in or out users.
+ */
 interface HoursTracker {
     /**
      * Record a user with id [id] clocking in at [timeMs] milliseconds after the Unix epoch.

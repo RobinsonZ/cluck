@@ -11,12 +11,18 @@ import org.team1540.timeclock.backend.interfaces.AdminToolsService
 import org.team1540.timeclock.backend.services.AdminToolsException
 import org.team1540.timeclock.backend.services.ClockInOutException
 
+/**
+ * Controller to pass API requests to the [AdminToolsService] implementation
+ */
 @RestController
 class AdminController {
     @Autowired
     private lateinit var adminToolsService: AdminToolsService
     private val logger = KotlinLogging.logger { }
 
+    /**
+     * Special data class for the request body so we don't encode the password in the URL like we would most parameters.
+     */
     data class AddCredentialRequestBody(var accessLevel: String, var username: String, var password: String)
 
     @PostMapping("/admin/addcredential")

@@ -6,10 +6,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.mail.MailException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.team1540.timeclock.backend.interfaces.EmailService
 import org.team1540.timeclock.backend.data.SimpleEmail
 import org.team1540.timeclock.backend.data.UserRepository
+import org.team1540.timeclock.backend.interfaces.EmailService
 
+/**
+ * Service to email users if they do not clock out on a certain day.
+ */
 @Service
 @ConditionalOnProperty("timeclock.autologout.enabled")
 class StillLoggedInYeller {
