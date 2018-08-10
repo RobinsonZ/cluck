@@ -99,6 +99,5 @@ The backend has [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) as
 - `timeclock.sheets.name-range`: The sheet range (e.g. A1:A20) containing the names of users.
 - `timeclock.sheets.hours-col`:  The column of the spreadsheet containing the hours: the backend will update this column.
 - `timeclock.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
-- `timeclock.auth.timeclock-username`: The username used for `clockapi` API methods.
 - `timeclock.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
 - `timeclock.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
