@@ -130,6 +130,8 @@ paths:
             additionalProperties:
               description: "A map of each user's name to the time (in ms) since the Unix epoch when they clocked in."
               type: string
+      security:
+      - timesheet-auth: []
   /admin/addcredential:
     post:
       operationId: "addCredential"
@@ -403,6 +405,9 @@ securityDefinitions:
   admin-auth:
     type: basic
     description: "Authorization for admin methods"
+  timesheet-auth:
+    type: basic
+    description: "Authorization for timesheet methods"
 definitions:
   User:
     type: "object"
