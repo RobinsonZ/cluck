@@ -394,7 +394,7 @@ paths:
                 example: "not_found"
                 description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is already clocked out, and 'never_clocked' if the user has never clocked in."
       security:
-      - timeclock-auth: []
+      - admin-auth: []
 
 securityDefinitions:
   timeclock-auth:
