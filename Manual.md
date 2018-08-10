@@ -32,34 +32,21 @@ The backend is OS-independent and runs anywhere Java and MongoDB run, but many c
 
     This will log all events to the `logs/` directory. Spring will auto-compress logs for each day by default resulting in a large number of ZIP files, so it is recommended to log events to a separate directory.
 
-3. Configure timeclock authentication (required):
+3. Configure admin password (required):
 
     Add to `application.yml`:
 
     ```yaml
     timeclock:
       auth:
-        timeclock-username: timeclock
-        timeclock-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
+        admin-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
     ```
 
-    These credentials will be necessary for timeclock clients (anyone accessing API methods under ``/clockapi/``) to log in.
+    These credentials will be necessary for the admin account to log in and create timeclock and timesheet accounts.
 
     Note that the password is not actually the password but an encoded form. See the Configuring Passwords section of this manual for more info.
 
-4. Configure timesheet authentication (optional, recomended for publicly exposed servers)
-
-    If you don't want people to be able to access data about who is logged in without a password, that can be configured here. Under the `auth` section, add these options:
-
-    ```yaml
-    secure-timesheet-api: true
-    timesheet-username: timesheet
-    timesheet-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
-    ```
-
-    If configured, timesheet clients (anyone accessing API methods under `/timesheet/`) will need to authenticate with those credentials.
-
-5. Disable scheduled log-outs (if desired)
+4. Disable scheduled log-outs (if desired)
 
     By default, at 11:59:59 PM system time, the timeclock will log out any logged-in users and send them an email notifying them that they forgot to log out. This can be disabled if desired.
 
@@ -111,7 +98,7 @@ Self-signed certificates are much simpler but may cause problems in your client 
    # other options
    ```
 
-## Installing and/or Configuring Dependencies
+## Installing and Configuring Dependencies
 
 ### MongoDB
 
@@ -125,4 +112,101 @@ spring:
     database: timeclock
 ```
 
-The database can be whatever you want, you'll just need it to configure users.
+The database name can be whatever you want.
+
+### Google Sheets
+
+The backend uses Google Sheets to let users easily view their hour counts.
+
+#### Setting Up a Google Sheet
+
+1. instructions on how to get a service account key go here
+2. Once you have a service account key file (with a name that looks something like `foo-c2dcf0a2fba7.json`), copy it into the same directory with the jar. 
+3. Create a new Google Sheet. Note the long string of numbers and letters in the URL; this is the spreadsheet ID. For example, if the URL is `https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit#gid=0`, the ID is `1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms`.
+4. Make sure that you have one column containing all of your user's names (exactly as they are when you enter them into the backend). This column can also contain headers and such, as long as the names are in one block. Make a note of the spreadsheet range (e.g. A1:A20) occupied by the names. 
+5. Figure out your row offset–the row number where the names start.
+6. Decide which column you want the backend to spit out hour counts into, and note its column letter. Note that the backend puts number in un-rounded, so you'll want to set up Google Sheets to display the numbers in that column to only a few decimal places.
+
+Add the following lines under the `timeclock` section in your `application.yml`:
+
+```yaml
+timeclock:
+  # <auth configuration>
+  sheets:
+    appName: Timeclock # pretty sure this bit does nothing
+    serviceFile: <name of service key file from step 2>
+    sheet: <sheet ID from step 3>
+    nameRange: <spreadsheet range from step 4>
+    hoursRowOffset: <row offset from step 5>
+    hoursCol: <column letter from step 6>
+```
+
+### SMTP Server
+
+Unless you disabled the autologout feature in Configuring the Server step 4, the backend requires an SMTP server to be configured to send mail from. 
+
+Create an email account with a hosting provider of your choice. Consult their documentation (google "\<provider name\> SMTP server") and figure out the address/host, port, and whether TLS is required (if in doubt, it probably is).
+
+Then add the following entries to your `application.yml` under the `spring` section like so:
+
+```yaml
+spring:
+  # <data configuration>
+  mail:
+    host: <your host, e.g. smtp.gmail.com>
+    port: <your port, e.g. 587>
+    username: <your account username>
+    password: <your account password>
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: <true if TLS is required, false otherwise>
+```
+
+When everything is said and done, your `application.yml` should look something like this:
+
+```yaml
+server:
+  port: 8443
+  ssl:
+    key-store: keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: timeclock
+    
+logging:
+  file: logs/timeclock.log
+  
+spring:
+  data.mongodb:
+    database: timeclock
+  mail:
+    host: <your host, e.g. smtp.gmail.com>
+    port: <your port, e.g. 587>
+    username: <your account username>
+    password: <your account password>
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: <true if TLS is required, false otherwise>
+timeclock:
+  auth:
+    admin-password: {bcrypt}$2y$12$/mCPS60bUoyo7.C2JrjpWOxQCBYDOhBW/Y2qAA0B2Wc8NCj5Trpgm
+  sheets:
+    appName: Timeclock # pretty sure this bit does nothing
+    serviceFile: <name of service key file from step 2>
+    sheet: <sheet ID from step 3>
+    nameRange: <spreadsheet range from step 4>
+    hoursRowOffset: <row offset from step 5>
+    hoursCol: <column letter from step 6>
+```
+
+## Starting the Backend
+
+To start the backend, open a terminal, `cd` to the directory containing the JAR, and type:
+
+```
+java -jar backend.jar
+```
+
+If you see a message saying "Started TimeClockBackendKt in X seconds (JVM running for Y)", you've successfully configured the backend! Now you can open up the admin client and configure users and credentials.
