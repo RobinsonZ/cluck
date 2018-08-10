@@ -1,6 +1,6 @@
 # Spec Sheet
 
-This is a set of instructions and info about the backend and its dependencies, written for people who know what they're doing. While there are hyperlinks to pretty much everything, there's no hand-holding here; for that, take a look at the manual.
+This is a set of instructions and info about the CLUCK backend and its dependencies, written for people who know what they're doing. While there are hyperlinks to pretty much everything, there's no hand-holding here; for that, take a look at the manual.
 
 ## Code
 
@@ -69,7 +69,7 @@ Each user document contains the following fields:
 - `_id`: The ID of the user, as a string
 - `name`: The full name of the user, as a string
 - `email`: The email address of the user, as a string. This is used by the auto-logout feature.
-- `_class`: This field is used internally by Spring Data. It should always be set to the string `"org.team1540.timeclock.backend.data.User"`.
+- `_class`: This field is used internally by Spring Data. It should always be set to the string `"org.team1540.cluck.backend.data.User"`.
 - `clockEvents`: A list of clock event (clock-in or clock-out) records. Each clock event document contains the following fields:
   - `timestamp`: A signed 64-bit integer containing the system time of the clock event, in milliseconds from the Unix epoch.
   - `clockingIn`: A boolean specifying whether the event was a clock-in (`true`) or a clock-out (`false`).
@@ -83,7 +83,7 @@ Each credential document contains the following fields:
 * `_id`: The username of the credential.
 * `password`: The encoded (hashed) password of the credential.
 * `accessLevel`: The access level of the credential (`TIMECLOCK`, `TIMESHEET`, or `ADMIN`).
-* `_class`:This field is used internally by Spring Data. It should always be set to the string `"org.team1540.timeclock.backend.data.Credential"`.
+* `_class`:This field is used internally by Spring Data. It should always be set to the string `"org.team1540.cluck.backend.data.Credential"`.
 
 ### Time Cache
 
@@ -93,11 +93,11 @@ The backend uses an additional collection called `timecache` to cache certain da
 
 The backend has [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) as a dependency and can use it for encrypted storage of application properties.
 
-- `timeclock.sheets.app-name`: The "app name" to use when editing the hours spreadsheet.
-- `timeclock.sheets.sheet`: The spreadsheet ID to update with hours.
-- `timeclock.sheets.service-file`: A path to the service account key used to edit the timesheet.
-- `timeclock.sheets.name-range`: The sheet range (e.g. A1:A20) containing the names of users.
-- `timeclock.sheets.hours-col`:  The column of the spreadsheet containing the hours: the backend will update this column.
-- `timeclock.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
-- `timeclock.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
-- `timeclock.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
+- `cluck.sheets.app-name`: The "app name" to use when editing the hours spreadsheet.
+- `cluck.sheets.sheet`: The spreadsheet ID to update with hours.
+- `cluck.sheets.service-file`: A path to the service account key used to edit the timesheet.
+- `cluck.sheets.name-range`: The sheet range (e.g. A1:A20) containing the names of users.
+- `cluck.sheets.hours-col`:  The column of the spreadsheet containing the hours: the backend will update this column.
+- `cluck.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
+- `cluck.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
+- `cluck.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
