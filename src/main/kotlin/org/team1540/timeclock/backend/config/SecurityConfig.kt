@@ -10,8 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.team1540.timeclock.backend.services.MongoUserDetailsService
 
-const val REALM = "TIMECLOCK"
-
 @Configuration
 class SecurityConfig : WebSecurityConfigurerAdapter() {
 
