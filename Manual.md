@@ -56,6 +56,9 @@ CLUCK is OS-independent and runs anywhere Java and MongoDB run, but many command
     autologout.enabled: false
     ```
 
+### Configuring Passwords
+
+For security reasons, the backend does not store passwords; it instead stores an encoded form. When setting the admin password, you should encode it with BCrypt. Go to [this website](https://bcrypt-generator.com/) and enter your desired password into the "String to encrypt" box. Add `{bcrypt}` to the beginning of the resulting string of gibberish and paste it where you'd put the password.
 ### Configuring SSL/HTTPS
 
 It is **strongly** recommended to configure SSL/HTTPS so that your credentials are encrypted. SSL and HTTPS require a certificate to prove that you are who you say you are. For now, we'll use a self-signed cert; if you want to use a Let's Encrypt certificate a guide can be found [here](https://dzone.com/articles/spring-boot-secured-by-lets-encrypt).
