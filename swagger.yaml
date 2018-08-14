@@ -313,7 +313,7 @@ paths:
                     timeIn:
                       type: string
                       example: "3564606"
-                      description: "The total number of milliseconds the user has spent clocked in."
+                      description: "The total number of milliseconds the user has spent clocked in, ever (equal to the user's total hours multiplied by 3600000)."
       security:
       - admin-auth: []
   /admin/allcredentials:
