@@ -91,7 +91,11 @@ class AdminToolsServiceImpl : AdminToolsService {
                     user.name,
                     user.email,
                     user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false,
-                    timeCacheEntryRepository.findById(user.id).map { it.time }.orElse(hoursCounter.getTotalMs(user))
+                    timeCacheEntryRepository.findById(user.id).orElse(null)?.time
+                            ?: run {
+                                logger.debug { "Cache miss for user ${user.id}, recalculating hours" }
+                                hoursCounter.getTotalMs(user)
+                            }
             )
         }.toSet()
     }
