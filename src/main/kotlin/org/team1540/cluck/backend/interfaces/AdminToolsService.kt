@@ -74,6 +74,8 @@ interface AdminToolsService {
             /** Whether or not the user is currently clocked in. */
             val clockedIn: Boolean,
             /** The time this user has spent clocked in, in milliseconds.*/
-            val timeIn: Long)
+            val timeIn: Long,
+            /** The time the user last clocked in or out. */
+            val lastEventTime: String)
 }
 

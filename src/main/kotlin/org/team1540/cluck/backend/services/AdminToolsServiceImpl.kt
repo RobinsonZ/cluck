@@ -95,7 +95,9 @@ class AdminToolsServiceImpl : AdminToolsService {
                             ?: run {
                                 logger.debug { "Cache miss for user ${user.id}, recalculating hours" }
                                 hoursCounter.getTotalMs(user)
-                            }
+                            },
+                    (user.lastEvent ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.timestamp
+                    ?: 0L).toString()
             )
         }.toSet()
         logger.debug { "Indexed all users" }
