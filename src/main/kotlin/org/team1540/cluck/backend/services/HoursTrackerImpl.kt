@@ -34,14 +34,18 @@ class HoursTrackerImpl : HoursTracker {
         }
 
 
-        val lastClockEvent = user.clockEvents.sortedBy { it.timestamp }.lastOrNull()
-        if (lastClockEvent?.clockingIn == true) {
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        ?: false
+        if (alreadyClockedIn) {
             // already clocked in
-            logger.debug { "User $id already clocked in at time ${lastClockEvent.timestamp} (${lastClockEvent.timestamp.convertToISODate()})" }
+            logger.debug { "User $id already clocked in without clocking out again" }
+            if (user.inNow == null) {
+                users.save(user.copy(inNow = true))
+            }
             throw AlreadyClockedInOrOutException()
         }
 
-        users.save(user.copy(clockEvents = user.clockEvents + ClockEvent(timeMs, true)))
+        users.save(user.copy(clockEvents = user.clockEvents + ClockEvent(timeMs, true), inNow = true, lastEvent = timeMs))
         logger.debug { "Recorded clock-in for user $id at time $timeMs (${timeMs.convertToISODate()})" }
     }
 
@@ -53,18 +57,19 @@ class HoursTrackerImpl : HoursTracker {
             throw UserNotFoundException()
         }
 
-        val lastClockEvent = user.clockEvents.sortedBy { it.timestamp }.lastOrNull()
-        if (lastClockEvent?.clockingIn == false) {
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        ?: false
+        if (!alreadyClockedIn) {
             // already clocked in
-            logger.debug { "User $id already clocked out at time ${lastClockEvent.timestamp} (${lastClockEvent.timestamp.convertToISODate()})" }
+            logger.debug { "User $id already clocked out without clocking in again" }
+            if (user.inNow == null) {
+                users.save(user.copy(inNow = false))
+            }
             throw AlreadyClockedInOrOutException()
-        } else if (lastClockEvent == null) {
-            logger.debug { "User $id attempting to clock out but never clocked in" }
-            throw NeverClockedInException()
         }
 
 
-        val savedUser = users.save(user.copy(clockEvents = user.clockEvents + ClockEvent(timeMs, false)))
+        val savedUser = users.save(user.copy(clockEvents = user.clockEvents + ClockEvent(timeMs, false), inNow = false, lastEvent = timeMs))
         hoursCounter.getTotalMsAsync(savedUser).thenAccept {
             hoursUpdater.setHours(savedUser, (it / 1000.0) / 3600.0) // convert milliseconds to hours
             logger.debug { "Clocked out user $id and updated hour count to $it ms (${(it / 1000.0) / 3600.0} hrs)" }

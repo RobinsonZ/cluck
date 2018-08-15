@@ -19,10 +19,16 @@ class LoggedInUsersTrackerImpl : LoggedInUsersTracker {
         // TODO: Find a better way of doing this than iterating through every user
         logger.debug { "Processing request for logged in users" }
         return users.findAll()
-                .filter { it.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false }
-                .associate { it.name to it.clockEvents.last().timestamp.toString() }
+                .filter { user ->
+                    user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false
+                }
+                .associate { user ->
+                    user.name to (user.lastEvent?.toString()
+                            ?: user.clockEvents.sortedBy { it.timestamp }.last().timestamp.toString())
+                }
                 .also { logger.debug { "${it.size} logged-in users found" } }
     }
 
-    override fun isUserLoggedIn(user: User) = user.clockEvents.sortedBy { it.timestamp }.last().clockingIn
+    override fun isUserLoggedIn(user: User) = user.inNow
+            ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false
 }

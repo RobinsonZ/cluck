@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 
 // app data storage
 @Document(collection = "users")
-data class User(@Id val id: String = "", val name: String = "", val email: String = "", val clockEvents: Collection<ClockEvent> = emptyList()) {
+data class User(@Id val id: String = "", val name: String = "", val email: String = "", val clockEvents: Collection<ClockEvent> = emptyList(), val inNow: Boolean? = null, val lastEvent: Long? = null) {
     override fun toString() = "$id ($name)"
 }
 

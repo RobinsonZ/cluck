@@ -4,7 +4,6 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.stereotype.Service
-import org.team1540.cluck.backend.convertToISODate
 import org.team1540.cluck.backend.data.*
 import org.team1540.cluck.backend.interfaces.AdminToolsService
 import org.team1540.cluck.backend.interfaces.HourCountUpdater
@@ -85,13 +84,13 @@ class AdminToolsServiceImpl : AdminToolsService {
         val users = userRepository.findAll().toSet()
         logger.debug { "Found ${users.size} users" }
 
-        return users.map { user ->
+        val retval = users.map { user ->
             // check the cache; if we get a cache miss recalculate
             AdminToolsService.UserWithInfo(
                     user.id,
                     user.name,
                     user.email,
-                    user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false,
+                    user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false,
                     timeCacheEntryRepository.findById(user.id).orElse(null)?.time
                             ?: run {
                                 logger.debug { "Cache miss for user ${user.id}, recalculating hours" }
@@ -99,12 +98,14 @@ class AdminToolsServiceImpl : AdminToolsService {
                             }
             )
         }.toSet()
+        logger.debug { "Indexed all users" }
+        return retval
     }
 
     override fun resetAllHours() {
         logger.info { "Resetting all user hour counts" }
         for (user in userRepository.findAll()) {
-            val newUser = userRepository.save(user.copy(clockEvents = emptyList()))
+            val newUser = userRepository.save(user.copy(clockEvents = emptyList(), inNow = false, lastEvent = null))
             hourCountUpdater.setHours(newUser, 0.0)
         }
         logger.info { "Reset complete" }
@@ -118,17 +119,17 @@ class AdminToolsServiceImpl : AdminToolsService {
             throw UserNotFoundException()
         }
 
-        val lastClockEvent = user.clockEvents.sortedBy { it.timestamp }.lastOrNull()
-        if (lastClockEvent?.clockingIn == false) {
-            // already clocked in
-            logger.debug { "User $id already clocked out at time ${lastClockEvent.timestamp} (${lastClockEvent.timestamp.convertToISODate()})" }
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        ?: false
+        if (!alreadyClockedIn) {
+            // already clocked out
+            logger.debug { "User $id already clocked out" }
             throw AlreadyClockedInOrOutException()
-        } else if (lastClockEvent == null) {
-            logger.debug { "User $id never clocked in" }
-            throw NeverClockedInException()
         }
 
-        userRepository.save(user.copy(clockEvents = user.clockEvents.sortedBy { it.timestamp }.dropLast(1)))
+        val sortedEvents = user.clockEvents.sortedBy { it.timestamp }
+
+        userRepository.save(user.copy(clockEvents = sortedEvents.dropLast(1), inNow = false, lastEvent = sortedEvents.lastOrNull()?.timestamp))
         logger.debug { "Voided last clock-in for user $user" }
     }
 
