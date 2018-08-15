@@ -64,10 +64,9 @@ paths:
                 enum:
                 - "not_found"
                 - "repeat_clock"
-                - "never_clocked"
                 - "unknown"
                 example: "not_found"
-                description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is attempting to clock in and has already clocked in (or vice versa), and 'never_clocked' if the user has never clocked in and is attempting to clock out."
+                description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is attempting to clock in and has already clocked in (or vice versa)"
       security:
       - timeclock-auth: []
   /clockapi/id:
@@ -293,6 +292,7 @@ paths:
                   - "email"
                   - "clockedIn"
                   - "timeIn"
+                  - "lastEventTime"
                   properties:
                     id:
                       type: string
@@ -311,9 +311,13 @@ paths:
                       description: "Whether or not the user is clocked in"
                       example: "true"
                     timeIn:
-                      type: string
-                      example: "3564606"
+                      type: integer
+                      example: 3564606
                       description: "The total number of milliseconds the user has spent clocked in, ever (equal to the user's total hours multiplied by 3600000)."
+                    lastEventTime:
+                      type: string
+                      example: "1526615236234"
+                      description: "The last time the user clocked in or out, in milliseconds from the UNIX epoch."
       security:
       - admin-auth: []
   /admin/allcredentials:
@@ -391,10 +395,9 @@ paths:
                 enum:
                 - "not_found"
                 - "repeat_clock"
-                - "never_clocked"
                 - "unknown"
                 example: "not_found"
-                description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is already clocked out, and 'never_clocked' if the user has never clocked in."
+                description: "A description of the error. 'not_found' if the user was invalid or 'repeat_clock' if the user is already clocked out or has never clocked in."
       security:
       - admin-auth: []
   /admin/edituser:
