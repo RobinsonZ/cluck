@@ -137,7 +137,7 @@ class AdminToolsServiceImpl : AdminToolsService {
      */
     override fun editUser(id: String, newId: String?, newName: String?, newEmail: String?) {
         logger.debug {
-            "Modifying user info for user $id${if (newId != null) "; changing ID to $newId" else ""}${if (newName != null) "; changing name to \"$newEmail\"" else ""}${if (newEmail != null) "; changing email to $newEmail" else ""}"
+            "Modifying user info for user $id${if (newId != null) "; changing ID to $newId" else ""}${if (newName != null) "; changing name to \"$newName\"" else ""}${if (newEmail != null) "; changing email to $newEmail" else ""}"
         }
 
         if (!userRepository.existsById(id)) {
