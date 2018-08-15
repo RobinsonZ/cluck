@@ -32,3 +32,9 @@ enum class AccessLevel(vararg val roleNames: String) {
 data class TimeCacheEntry(val id: String = "", val time: Long = -1)
 
 interface TimeCacheEntryRepository : MongoRepository<TimeCacheEntry, String>
+
+// data collection
+@Document(collection = "analyticsEvents")
+data class AnalyticsEvent(val timestamp: Long = 0L, val user: String = "", val description: String = "")
+
+interface AnalyticsRepository : MongoRepository<AnalyticsEvent, Any>
