@@ -77,6 +77,12 @@ class AdminController {
         }
     }
 
+    @PostMapping("/admin/edituser")
+    fun editUser(@RequestParam id: String, @RequestParam newId: String?, @RequestParam newName: String?, @RequestParam newEmail: String?) = doServiceAction {
+        adminToolsService.editUser(id, newId, newName, newEmail)
+        ResponseEntity.ok().build<Any>()
+    }
+
     private fun <R : ResponseEntity<*>> doServiceAction(action: () -> R): ResponseEntity<*> {
         return try {
             action()

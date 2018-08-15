@@ -397,6 +397,48 @@ paths:
                 description: "A description of the error. 'not_found' if the user was invalid, 'repeat_clock' if the user is already clocked out, and 'never_clocked' if the user has never clocked in."
       security:
       - admin-auth: []
+  /admin/edituser:
+    post:
+      tags:
+      - "admin"
+      summary: "Edit a user"
+      operationId: "editUser"
+      parameters:
+      - name: "id"
+        in: query
+        type: string
+        description: "The user's ID"
+        required: true
+      - name: "newId"
+        in: query
+        type: string
+        description: "The user's new ID, if desired"
+        required: false
+      - name: "newName"
+        in: query
+        type: string
+        description: "The user's new name, if desired"
+        required: false
+      - name: "newEmail"
+        in: query
+        type: string
+        description: "The user's new email, if desired"
+        required: false
+      responses:
+        200:
+          description: "Success"
+        404:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                - not_found
+                example: not_found
+      security:
+      - admin-auth: []
 
 securityDefinitions:
   timeclock-auth:

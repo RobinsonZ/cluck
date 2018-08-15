@@ -15,6 +15,7 @@ class AdminToolsServiceImpl : AdminToolsService {
     private val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     private val logger = KotlinLogging.logger { }
+
     @Autowired
     private lateinit var credentialRepository: CredentialRepository
     @Autowired
@@ -25,7 +26,6 @@ class AdminToolsServiceImpl : AdminToolsService {
     private lateinit var timeCacheEntryRepository: TimeCacheEntryRepository
     @Autowired
     private lateinit var hoursCounter: HoursCounter
-
 
     override fun addCredentialSet(level: AccessLevel, username: String, password: String) {
         logger.debug { "Adding new credential set \"$username\" with access level $level" }
@@ -38,6 +38,7 @@ class AdminToolsServiceImpl : AdminToolsService {
             throw CredentialAlreadyExistsException()
         }
     }
+
 
     override fun removeCredentialSet(username: String) {
         logger.debug { "Deleting credential \"$username\"" }
@@ -129,6 +130,32 @@ class AdminToolsServiceImpl : AdminToolsService {
 
         userRepository.save(user.copy(clockEvents = user.clockEvents.sortedBy { it.timestamp }.dropLast(1)))
         logger.debug { "Voided last clock-in for user $user" }
+    }
+
+    /**
+     * Edits a user's data. If any parameters are `null`, then they keep their old value in the database.
+     */
+    override fun editUser(id: String, newId: String?, newName: String?, newEmail: String?) {
+        logger.debug {
+            "Modifying user info for user $id${if (newId != null) "; changing ID to $newId" else ""}${if (newName != null) "; changing name to \"$newEmail\"" else ""}${if (newEmail != null) "; changing email to $newEmail" else ""}"
+        }
+
+        if (!userRepository.existsById(id)) {
+            logger.debug { "Could not find user $id to modify" }
+            throw NoSuchUserException()
+        }
+
+        val oldUser = userRepository.findById(id).orElse(null)!!
+
+        userRepository.save(oldUser.copy(id = newId ?: oldUser.id, name = newName ?: oldUser.name, email = newEmail
+                ?: oldUser.email))
+        logger.debug { "Successfully edited user ${newId ?: id}" }
+
+        if (newId != null) {
+            userRepository.deleteById(oldUser.id)
+            logger.debug { "Deleted old user instance" }
+        }
+
     }
 
 }

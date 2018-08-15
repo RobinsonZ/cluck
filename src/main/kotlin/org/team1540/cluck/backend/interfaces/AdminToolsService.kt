@@ -62,6 +62,11 @@ interface AdminToolsService {
     fun voidLastClock(id: String)
 
     /**
+     * Edits a user's data. If any parameters are `null`, then they keep their old value in the database.
+     */
+    @Throws(NoSuchUserException::class)
+    fun editUser(id: String, newId: String?, newName: String?, newEmail: String?)
+    /**
      * Data class to include user data for sending via the API, as well as additional info.
      */
     data class UserWithInfo(
