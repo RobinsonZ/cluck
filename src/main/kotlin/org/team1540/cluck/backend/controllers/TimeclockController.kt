@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.team1540.cluck.backend.convertToISODate
 import org.team1540.cluck.backend.data.UserRepository
+import org.team1540.cluck.backend.interfaces.AnalyticsCollectionService
 import org.team1540.cluck.backend.interfaces.HoursTracker
 import org.team1540.cluck.backend.services.ClockInOutException
+import java.security.Principal
 
 @RestController
 class TimeclockController {
@@ -21,22 +23,29 @@ class TimeclockController {
     @Autowired
     lateinit var hoursTracker: HoursTracker
 
+    @Autowired
+    private lateinit var analyticsCollectionService: AnalyticsCollectionService
+
     val logger = KotlinLogging.logger {}
 
     @PostMapping("/clockapi/clock")
-    fun clock(@RequestParam user: String, @RequestParam clockingIn: Boolean): Any {
+    fun clock(@RequestParam user: String, @RequestParam clockingIn: Boolean, principal: Principal): Any {
         val time = System.currentTimeMillis()
         return try {
             if (clockingIn) {
                 hoursTracker.recordClockIn(user, time)
+                analyticsCollectionService.recordEvent(time, principal.name, "clock_in")
             } else {
                 hoursTracker.recordClockOut(user, time)
+                analyticsCollectionService.recordEvent(time, principal.name, "clock_out")
             }
             logger.debug { "Successful clock-${if (clockingIn) "in" else "out"} request executed for user $user at time $time (${time.convertToISODate()})" }
 
             mapOf("time" to time.toString())
         } catch (e: ClockInOutException) {
             logger.debug { "Clock-${if (clockingIn) "in" else "out"} request for user $user at $time (${time.convertToISODate()}) errored due to bad input: ${e.message}" }
+
+            analyticsCollectionService.recordEvent(time, principal.name, "clock_${if (clockingIn) "in" else "out"}_failed_${e.message}")
 
             ResponseEntity(mapOf("message" to e.message), HttpStatus.NOT_FOUND)
         }

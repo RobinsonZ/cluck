@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.team1540.cluck.backend.data.SimpleEmail
 import org.team1540.cluck.backend.data.UserRepository
+import org.team1540.cluck.backend.interfaces.AnalyticsCollectionService
 import org.team1540.cluck.backend.interfaces.EmailService
 
 /**
@@ -21,6 +22,8 @@ class StillLoggedInYeller {
     private lateinit var users: UserRepository
     @Autowired
     private lateinit var emailService: EmailService
+    @Autowired
+    private lateinit var analyticsCollectionService: AnalyticsCollectionService
 
     @Scheduled(cron = "59 59 23 * * ?") // 11:59:59 PM every day
     fun checkOutstandingLogins() {
@@ -36,6 +39,7 @@ class StillLoggedInYeller {
                     .map {
                         // delete that last entry from the database
                         users.save(it.key.copy(clockEvents = it.key.clockEvents - it.value!!))
+                        analyticsCollectionService.recordEvent(start, "", "outstanding_login")
                         SimpleEmail(it.key.email, "Lab Hours", "You didn't sign out of the lab today; these hours have been lost.")
                     }.toTypedArray())
         } catch (e: MailException) {
