@@ -57,6 +57,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-mail")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+    compile("de.codecentric:spring-boot-admin-starter-client:2.0.2")
     // encryption
     compile("com.github.ulisesbocchio:jasypt-spring-boot-starter:2.0.0")
     // logging

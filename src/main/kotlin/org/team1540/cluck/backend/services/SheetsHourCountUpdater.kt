@@ -8,12 +8,14 @@ import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.api.services.sheets.v4.model.ValueRange
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.actuate.health.Health
 import org.springframework.context.annotation.Conditional
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.team1540.cluck.backend.config.SheetsConfig
 import org.team1540.cluck.backend.data.User
 import org.team1540.cluck.backend.interfaces.HourCountUpdater
+import org.team1540.cluck.backend.interfaces.SheetsHealthProvider
 import org.team1540.cluck.backend.testconditional.OfflineConditional
 import java.io.File
 import java.io.IOException
@@ -23,7 +25,22 @@ import javax.annotation.PostConstruct
 
 @Service
 @Conditional(OfflineConditional::class)
-class SheetsHourCountUpdater : HourCountUpdater {
+class SheetsHourCountUpdater : HourCountUpdater, SheetsHealthProvider {
+    /**
+     * Return an indication of health.
+     * @return the health for
+     */
+    override fun getSheetsHealth(): Health {
+        return try {
+            val start = System.currentTimeMillis()
+            val sheetId = sheets.spreadsheets().get(config.sheet).execute().spreadsheetId
+            val end = System.currentTimeMillis()
+            Health.up().withDetail("sheetID", sheetId).withDetail("ping", end - start).build()
+        } catch (e: IOException) {
+            Health.down(e).build()
+        }
+    }
+
     private val logger = KotlinLogging.logger {}
 
     @Autowired
