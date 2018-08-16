@@ -15,7 +15,7 @@ import org.team1540.cluck.backend.interfaces.EmailService
  * Service to email users if they do not clock out on a certain day.
  */
 @Service
-@ConditionalOnProperty("cluck.autologout.enabled")
+@ConditionalOnProperty(value = ["cluck.autologout.enabled"], matchIfMissing = true)
 class StillLoggedInYeller {
     val logger = KotlinLogging.logger {}
     @Autowired
