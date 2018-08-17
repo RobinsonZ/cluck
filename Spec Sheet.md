@@ -73,6 +73,8 @@ Each user document contains the following fields:
 - `clockEvents`: A list of clock event (clock-in or clock-out) records. Each clock event document contains the following fields:
   - `timestamp`: A signed 64-bit integer containing the system time of the clock event, in milliseconds from the Unix epoch.
   - `clockingIn`: A boolean specifying whether the event was a clock-in (`true`) or a clock-out (`false`).
+- `lastEvent`: The time of the last clock event. This is stored for caching purposes; if you are editing the user object manually, delete it to avoid errors.
+- `inNow`: Whether the user is currently clocked in. This is stored for caching purposes; if you are editing the user object manually, delete it to avoid errors.
 
 #### Credential Info
 
@@ -84,6 +86,23 @@ Each credential document contains the following fields:
 * `password`: The encoded (hashed) password of the credential.
 * `accessLevel`: The access level of the credential (`TIMECLOCK`, `TIMESHEET`, or `ADMIN`).
 * `_class`:This field is used internally by Spring Data. It should always be set to the string `"org.team1540.cluck.backend.data.Credential"`.
+
+#### Analytics
+
+The backend stores an event history in a collection called `analyticsEvents`, if you're into that sort of thing.
+
+Each analytics event contains the following fields:
+
+- `timestamp`: The time of the event, in milliseconds from the UNIX epoch.
+- `user`: The username (i.e. credential) causing this event; i.e. the username used to authenticate to the API when making the logged request. Can be blank if the record is of an automated action (e.g. `outstanding_login`)
+- `description`: A description of the event. Current descriptions are as follows:
+  - `clock_in`: A user clocked in.
+  - `clock_in_failed_not_found`: A user attempted to clock in, but they were not found in the user database/entered their ID incorrectly.
+  - `clock_in_failed_repeat_clock`: A user attempted to clock in, but was already clocked in beforehand.
+  - `clock_out`: A user clocked out.
+  - `clock_out_failed_not_found`: A user attempted to clock out, but they were not found in the user database/entered their ID incorrectly.
+  - `clock_out_failed_repeat_clock`: A user attempted to clock out, but was already clocked out beforehand/never clocked in in the first place.
+  - `outstanding_login`: A user failed to clock out and was clocked out automatically by the auto-logout system.
 
 ### Time Cache
 
