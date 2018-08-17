@@ -123,12 +123,27 @@ The backend uses Google Sheets to let users easily view their hour counts.
 
 #### Setting Up a Google Sheet
 
-1. instructions on how to get a service account key go here
+1. Acquire a Google Sheets Service Account key.
+   1. Open the [Google Developers Console](https://console.developers.google.com/) and sign in with a Google account.
+   2. Click "Select a project" in the top left corner.
+   3. Click "Create a new project."
+   4. Name it whatever you want.
+   5. You'll be redirected to the home page while the project is set up (the process usually takes about 30 seconds). Click "Select a project" again, and wait until you can select your new project in the list.
+   6. Select "Library" in the left-side menu.
+   7. Search for "Sheets", view the Google Sheets API, and click "Enable."
+   8. Select "Credentials" in the left-side menu.
+   9. Click "Create credentials > Service account key"
+   10. In the dropdown, select "New service account"
+   11. Enter a name for the account.
+   12. Note the email address under "service account ID." You'll need to share your spreadsheet with this email address.
+   13. Click "Create," then "Create without role."
+   14. A file should now be downloaded to your computer. This is the key file.
 2. Once you have a service account key file (with a name that looks something like `foo-c2dcf0a2fba7.json`), copy it into the same directory with the jar. 
 3. Create a new Google Sheet. Note the long string of numbers and letters in the URL; this is the spreadsheet ID. For example, if the URL is `https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit#gid=0`, the ID is `1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms`.
 4. Make sure that you have one column containing all of your user's names (exactly as they are when you enter them into the backend). This column can also contain headers and such, as long as the names are in one block. Make a note of the spreadsheet range (e.g. A1:A20) occupied by the names. 
 5. Figure out your row offset–the row number where the names start.
 6. Decide which column you want the backend to spit out hour counts into, and note its column letter. Note that the backend puts number in un-rounded, so you'll want to set up Google Sheets to display the numbers in that column to only a few decimal places.
+7. Share the sheet with the email address from step 1.12.
 
 Add the following lines under the `cluck` section in your `application.yml`:
 
