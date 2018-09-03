@@ -38,7 +38,7 @@ class StillLoggedInYeller {
                     .filter { it.value?.clockingIn == true }
                     .map {
                         // delete that last entry from the database
-                        users.save(it.key.copy(clockEvents = it.key.clockEvents - it.value!!))
+                        users.save(it.key.copy(clockEvents = it.key.clockEvents - it.value!!, inNow = false, lastEvent = (it.key.clockEvents - it.value!!).sortedBy { it.timestamp }.lastOrNull()?.timestamp))
                         analyticsCollectionService.recordEvent(start, "", "outstanding_login")
                         SimpleEmail(it.key.email, "Lab Hours", "You didn't sign out of the lab today; these hours have been lost.")
                     }.toTypedArray())
