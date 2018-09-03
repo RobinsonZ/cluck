@@ -8,7 +8,6 @@ info:
   license:
     name: "Licensed under MIT"
     url: "https://opensource.org/licenses/MIT"
-host: "robotics.catlin.edu"
 tags:
 - name: "clockapi"
   description: "Secured API for clock-in/clock-out terminals"
