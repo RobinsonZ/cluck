@@ -452,6 +452,33 @@ paths:
       responses:
         200:
           description: "Server is up"
+  /authtest:
+    get:
+      tags:
+      - "misc"
+      summary: "Test authentication credentials"
+      operationId: "testAuth"
+      responses:
+        200:
+          description: "Credentials were correct/none were provided"
+          schema:
+            properties:
+              accessLevel:
+                type: string
+                description: "The provided credentials' level of access, or NONE if no credentials were provided"
+                example: "TIMECLOCK"
+                enum:
+                - "NONE"
+                - "TIMECLOCK"
+                - "TIMESHEET"
+                - "ADMIN"
+        401:
+          description: "The provided credentials were invalid"
+      security:
+      - admin-auth: []
+      - timeclock-auth: []
+      - timesheet-auth: []
+
 
 securityDefinitions:
   timeclock-auth:
