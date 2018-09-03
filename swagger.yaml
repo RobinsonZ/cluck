@@ -6,8 +6,8 @@ info:
   contact:
     email: "robinsonz@catlin.edu"
   license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    name: "Licensed under MIT"
+    url: "https://opensource.org/licenses/MIT"
 host: "robotics.catlin.edu"
 tags:
 - name: "clockapi"
