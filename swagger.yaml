@@ -16,6 +16,8 @@ tags:
   description: "Read-only API for personnel displays"
 - name: "admin"
   description: "Administrative API for managing users and terminals"
+- name: "misc"
+  description: "Miscellaneous methods for all clients"
 schemes:
 - "https"
 paths:
@@ -442,6 +444,15 @@ paths:
                 example: not_found
       security:
       - admin-auth: []
+  /ping:
+    get:
+      tags:
+      - "misc"
+      summary: "Ping the server"
+      operationId: "ping"
+      responses:
+        200:
+          description: "Server is up"
 
 securityDefinitions:
   timeclock-auth:
