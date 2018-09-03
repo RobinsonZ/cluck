@@ -10,11 +10,11 @@ info:
     url: "https://opensource.org/licenses/MIT"
 tags:
 - name: "clockapi"
-  description: "Secured API for clock-in/clock-out terminals"
+  description: "API for clock-in/clock-out terminals"
 - name: "timesheet"
-  description: "Read-only API for personnel displays"
+  description: "API for personnel displays"
 - name: "admin"
-  description: "Administrative API for managing users and terminals"
+  description: "API for managing users and terminals"
 - name: "misc"
   description: "Miscellaneous methods for all clients"
 schemes:
