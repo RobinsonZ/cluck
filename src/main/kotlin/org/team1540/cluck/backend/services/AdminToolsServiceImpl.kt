@@ -90,13 +90,13 @@ class AdminToolsServiceImpl : AdminToolsService {
                     user.id,
                     user.name,
                     user.email,
-                    user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false,
+                    user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn ?: false,
                     timeCacheEntryRepository.findById(user.id).orElse(null)?.time
                             ?: run {
                                 logger.debug { "Cache miss for user ${user.id}, recalculating hours" }
                                 hoursCounter.getTotalMs(user)
                             },
-                    (user.lastEvent ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.timestamp
+                    (user.lastEvent ?: user.clockEvents.maxBy { it.timestamp }?.timestamp
                     ?: 0L).toString()
             )
         }.toSet()
@@ -121,7 +121,7 @@ class AdminToolsServiceImpl : AdminToolsService {
             throw UserNotFoundException()
         }
 
-        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn
         ?: false
         if (!alreadyClockedIn) {
             // already clocked out

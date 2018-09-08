@@ -34,7 +34,7 @@ class HoursTrackerImpl : HoursTracker {
         }
 
 
-        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn
         ?: false
         if (alreadyClockedIn) {
             // already clocked in
@@ -57,7 +57,7 @@ class HoursTrackerImpl : HoursTracker {
             throw UserNotFoundException()
         }
 
-        val alreadyClockedIn = user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn
+        val alreadyClockedIn = user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn
         ?: false
         if (!alreadyClockedIn) {
             // already clocked in

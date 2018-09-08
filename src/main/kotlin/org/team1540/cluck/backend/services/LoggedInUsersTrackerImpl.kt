@@ -20,7 +20,7 @@ class LoggedInUsersTrackerImpl : LoggedInUsersTracker {
         logger.debug { "Processing request for logged in users" }
         return users.findAll()
                 .filter { user ->
-                    user.inNow ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false
+                    user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn ?: false
                 }
                 .associate { user ->
                     user.name to (user.lastEvent?.toString()
@@ -30,5 +30,5 @@ class LoggedInUsersTrackerImpl : LoggedInUsersTracker {
     }
 
     override fun isUserLoggedIn(user: User) = user.inNow
-            ?: user.clockEvents.sortedBy { it.timestamp }.lastOrNull()?.clockingIn ?: false
+            ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn ?: false
 }

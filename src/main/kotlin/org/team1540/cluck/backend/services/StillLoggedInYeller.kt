@@ -33,7 +33,7 @@ class StillLoggedInYeller {
         try {
             emailService.send(*users.findAll()
                     .associate {
-                        it to it.clockEvents.sortedBy { it.timestamp }.lastOrNull()
+                        it to it.clockEvents.maxBy { it.timestamp }
                     }
                     .filter { it.value?.clockingIn == true }
                     .map {
