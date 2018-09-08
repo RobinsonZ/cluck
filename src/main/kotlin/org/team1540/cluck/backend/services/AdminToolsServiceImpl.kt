@@ -41,8 +41,8 @@ class AdminToolsServiceImpl : AdminToolsService {
 
     override fun removeCredentialSet(username: String) {
         logger.debug { "Deleting credential \"$username\"" }
-        if (userRepository.existsById(username)) {
-            userRepository.deleteById(username)
+        if (credentialRepository.existsById(username)) {
+            credentialRepository.deleteById(username)
             logger.debug { "Deleted credential \"$username\"" }
         } else {
             logger.debug { "Failed to delete credential with username \"$username\": no such credential exists" }
