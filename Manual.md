@@ -223,7 +223,7 @@ cluck:
 
 To start the backend, open a terminal, `cd` to the directory containing the JAR, and type:
 
-```
+```bash
 java -jar backend.jar
 ```
 
