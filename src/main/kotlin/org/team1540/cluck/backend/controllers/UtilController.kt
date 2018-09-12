@@ -22,9 +22,9 @@ class UtilController {
                 ?: "NONE")
         logger.debug {
             if (auth == null) {
-                "Recieved authentication test request from unauthenticated user (access level $authLevel)"
+                "Received authentication test request from unauthenticated user (access level $authLevel)"
             } else {
-                "Recieved authentication test request from user ${auth.name} (access level $authLevel)"
+                "Received authentication test request from user ${auth.name} (access level $authLevel)"
             }
         }
         return mapOf("accessLevel" to authLevel)

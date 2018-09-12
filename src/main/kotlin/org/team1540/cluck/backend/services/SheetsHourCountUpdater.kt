@@ -56,7 +56,7 @@ class SheetsHourCountUpdater : HourCountUpdater {
         } catch (e: IOException) {
             logger.warn(e) { "IO error occured when testing Sheets API, something is probably broken" }
         } catch (e: NullPointerException) {
-            logger.warn("Recieved unexpected null response from Sheets API, spreadsheet is probably misconfigured")
+            logger.warn("Received unexpected null response from Sheets API, spreadsheet is probably misconfigured")
         }
     }
 
