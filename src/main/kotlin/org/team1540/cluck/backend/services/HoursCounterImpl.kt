@@ -47,7 +47,7 @@ class HoursCounterImpl : HoursCounter {
                     }
                 }.also {
                     // cache it
-                    it?.let { timeCacheEntryRepository.save(TimeCacheEntry(user.id, it)) }
+                    it.let { timeCacheEntryRepository.save(TimeCacheEntry(user.id, it ?: 0)) }
                 }.let { CompletableFuture.completedFuture(it ?: 0L) }
 
     }
