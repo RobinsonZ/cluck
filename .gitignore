@@ -6,6 +6,7 @@
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
+.idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
 
@@ -16,14 +17,22 @@
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
 
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+
 # CMake
-cmake-build-debug/
-cmake-build-release/
+cmake-build-*/
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
@@ -127,3 +136,5 @@ logs/
 application.yml
 # Google credentials (this is a bit blunt but there's no other JSON in the project)
 *.json
+# logback config (private credentials are there)
+src/main/resources/logback-spring.xml
