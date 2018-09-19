@@ -52,3 +52,17 @@ class LogoutConfig {
     @Value("true")
     var enabled: Boolean = true
 }
+
+@ConfigurationProperties("cluck.email")
+class EmailConfig {
+    /**
+     * The from field on automated emails. Defaults to `"CLUCK" <cluck@example.com>`
+     */
+    @Value("\"CLUCK\" <cluck@example.com>")
+    lateinit var emailFrom: String
+    /**
+     * The reply-to field on automated emails. Defaults to `cluck@example.com`.
+     */
+    @Value("cluck@example.com")
+    lateinit var emailReplyTo: String
+}
