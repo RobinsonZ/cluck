@@ -61,6 +61,8 @@ dependencies {
     compile("com.github.ulisesbocchio:jasypt-spring-boot-starter:2.0.0")
     // logging
     compile('io.github.microutils:kotlin-logging:1.5.4')
+    compile('com.github.maricn:logback-slack-appender:1.4.0')
+    compile('com.eclecticlogic:whisper:1.0.3')
     // google
     compile('com.google.api-client:google-api-client:1.23.0')
     compile('com.google.oauth-client:google-oauth-client-jetty:1.23.0')
