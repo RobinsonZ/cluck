@@ -1,5 +1,6 @@
 package org.team1540.cluck.backend.services
 
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Conditional
 import org.springframework.mail.MailException
@@ -13,6 +14,8 @@ import org.team1540.cluck.backend.testconditional.OfflineConditional
 @Service
 @Conditional(OfflineConditional::class)
 class EmailServiceImpl : EmailService {
+
+    private val logger = KotlinLogging.logger { }
 
     @Autowired
     lateinit var emailSender: MailSender
@@ -28,6 +31,7 @@ class EmailServiceImpl : EmailService {
             messages += message
         }
         emailSender.send(*messages.toTypedArray())
+        logger.debug { "Sent ${messages.size} emails" }
     }
 }
 
