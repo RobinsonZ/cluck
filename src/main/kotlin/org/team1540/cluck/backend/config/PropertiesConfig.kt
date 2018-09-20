@@ -54,6 +54,7 @@ class LogoutConfig {
 }
 
 @ConfigurationProperties("cluck.email")
+@Configuration
 class EmailConfig {
     /**
      * The from field on automated emails. Defaults to `"CLUCK" <cluck@example.com>`
