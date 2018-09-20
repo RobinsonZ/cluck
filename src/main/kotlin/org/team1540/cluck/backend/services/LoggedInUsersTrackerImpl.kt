@@ -18,10 +18,7 @@ class LoggedInUsersTrackerImpl : LoggedInUsersTracker {
     override fun getLoggedInUsers(): Map<String, String> {
         // TODO: Find a better way of doing this than iterating through every user
         logger.debug { "Processing request for logged in users" }
-        return users.findAll()
-                .filter { user ->
-                    user.inNow ?: user.clockEvents.maxBy { it.timestamp }?.clockingIn ?: false
-                }
+        return users.findAllByInNow(true)
                 .associate { user ->
                     user.name to (user.lastEvent?.toString()
                             ?: user.clockEvents.sortedBy { it.timestamp }.last().timestamp.toString())
