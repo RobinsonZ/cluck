@@ -443,6 +443,55 @@ paths:
                 example: not_found
       security:
       - admin-auth: []
+  /admin/userhistory:
+    get:
+      tags:
+        - "admin"
+      summary: "Get clock-in/out history for a user"
+      operationId: "getUserHistory"
+      parameters:
+        - name: "id"
+          in: query
+          required: true
+          type: string
+          description: "The user's ID"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: object
+            required:
+              - "events"
+            properties:
+              events:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - "timestamp"
+                    - "clockingIn"
+                  properties:
+                    timestamp:
+                      type: string
+                      example: 1526615236234
+                      description: "The timestamp of the event, in milliseconds since the UNIX epoch."
+                    clockingIn:
+                      type: boolean
+                      example: true
+                      description: "Whether the user was clocking in. (if false, user was clocking out.)"
+        404:
+          description: "Failed"
+          schema:
+            properties:
+              message:
+                type: string
+                description: "A description of the error."
+                enum:
+                  - not_found
+                example: not_found
+      security:
+        - admin-auth: []
+
   /ping:
     get:
       tags:
