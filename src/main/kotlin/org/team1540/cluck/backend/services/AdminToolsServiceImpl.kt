@@ -161,4 +161,16 @@ class AdminToolsServiceImpl : AdminToolsService {
 
     }
 
+    override fun getUserHistory(id: String): List<ClockEvent> {
+        logger.debug { "Getting user history for user $id" }
+        val user = userRepository.findById(id).orElseThrow {
+            logger.debug { "Could not find user $id" }
+            throw UserNotFoundException()
+        }
+
+        logger.debug { "Found ${user.clockEvents.size} events for user $user" }
+
+        return user.clockEvents.sortedBy { it.timestamp }
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.team1540.cluck.backend.interfaces
 
 import org.team1540.cluck.backend.data.AccessLevel
+import org.team1540.cluck.backend.data.ClockEvent
 import org.team1540.cluck.backend.data.Credential
 import org.team1540.cluck.backend.data.User
 import org.team1540.cluck.backend.services.*
@@ -66,6 +67,14 @@ interface AdminToolsService {
      */
     @Throws(NoSuchUserException::class)
     fun editUser(id: String, newId: String?, newName: String?, newEmail: String?)
+
+    /**
+     * Gets the clock-in and clock-out history for the user with the specified [id]. The returned list will be sorted
+     * in ascending order of time.
+     */
+    @Throws(UserNotFoundException::class)
+    fun getUserHistory(id: String): List<ClockEvent>
+
     /**
      * Data class to include user data for sending via the API, as well as additional info.
      */

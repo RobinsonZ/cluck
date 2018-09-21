@@ -83,6 +83,11 @@ class AdminController {
         ResponseEntity.ok().build<Any>()
     }
 
+    @GetMapping("/admin/userhistory")
+    fun getUserHistory(@RequestParam id: String) = doServiceAction {
+        ResponseEntity.ok(mapOf("events" to adminToolsService.getUserHistory(id).map { mapOf("timestamp" to it.timestamp.toString(), "clockingIn" to it.clockingIn) }))
+    }
+
     private fun <R : ResponseEntity<*>> doServiceAction(action: () -> R): ResponseEntity<*> {
         return try {
             action()
