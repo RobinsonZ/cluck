@@ -110,6 +110,7 @@ class AdminToolsServiceImpl : AdminToolsService {
             val newUser = userRepository.save(user.copy(clockEvents = emptyList(), inNow = false, lastEvent = null))
             hourCountUpdater.setHours(newUser, 0.0)
         }
+        timeCacheEntryRepository.deleteAll()
         logger.info { "Reset complete" }
     }
 
