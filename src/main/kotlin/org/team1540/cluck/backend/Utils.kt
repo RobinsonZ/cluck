@@ -1,3 +1,5 @@
+@file:JvmName("Utils")
+
 package org.team1540.cluck.backend
 
 import java.time.Instant

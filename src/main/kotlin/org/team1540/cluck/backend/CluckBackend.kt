@@ -1,3 +1,5 @@
+@file:JvmName("CluckMain")
+
 package org.team1540.cluck.backend
 
 import org.springframework.boot.SpringApplication
