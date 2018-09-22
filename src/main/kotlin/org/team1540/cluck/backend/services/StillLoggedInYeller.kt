@@ -31,11 +31,10 @@ class StillLoggedInYeller {
         logger.debug { "Processing outstanding logins" }
 
         try {
-            emailService.send(*users.findAll()
+            emailService.send(*users.findAllByInNow(true)
                     .associate {
                         it to it.clockEvents.maxBy { it.timestamp }
                     }
-                    .filter { it.value?.clockingIn == true }
                     .map {
                         // delete that last entry from the database
                         users.save(it.key.copy(clockEvents = it.key.clockEvents - it.value!!, inNow = false, lastEvent = (it.key.clockEvents - it.value!!).sortedBy { it.timestamp }.lastOrNull()?.timestamp))
