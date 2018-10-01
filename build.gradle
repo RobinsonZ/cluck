@@ -71,3 +71,9 @@ dependencies {
 
 compileJava.dependsOn(processResources)
 compileKotlin.dependsOn(processResources)
+
+task deploy(type: Exec) {
+    dependsOn(build)
+    workingDir '.'
+    commandLine './deploy.sh'
+}
