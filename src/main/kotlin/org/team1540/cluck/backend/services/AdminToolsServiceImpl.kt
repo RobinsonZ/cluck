@@ -149,6 +149,11 @@ class AdminToolsServiceImpl : AdminToolsService {
             throw NoSuchUserException()
         }
 
+        if (newId != null && userRepository.existsById(newId)) {
+            logger.debug { "User with ID $newId already exists" }
+            throw UserAlreadyExistsException()
+        }
+
         val oldUser = userRepository.findById(id).orElse(null)!!
 
         userRepository.save(oldUser.copy(id = newId ?: oldUser.id, name = newName ?: oldUser.name, email = newEmail
