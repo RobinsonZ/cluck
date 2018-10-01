@@ -440,6 +440,7 @@ paths:
                 description: "A description of the error."
                 enum:
                 - not_found
+                - already_exists
                 example: not_found
       security:
       - admin-auth: []
