@@ -65,7 +65,7 @@ interface AdminToolsService {
     /**
      * Edits a user's data. If any parameters are `null`, then they keep their old value in the database.
      */
-    @Throws(NoSuchUserException::class)
+    @Throws(NoSuchUserException::class, UserAlreadyExistsException::class)
     fun editUser(id: String, newId: String?, newName: String?, newEmail: String?)
 
     /**
