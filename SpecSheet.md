@@ -120,3 +120,5 @@ The backend has [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) as
 - `cluck.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
 - `cluck.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
 - `cluck.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
+- `cluck.email.email-from`: The email that autologout emails should be sent from. Defaults to `"CLUCK" <cluck@example.com>`.
+- `cluck.email.email-reply-to`: The reply-to email for autologout emails. Defaults to `cluck@example.com`.
