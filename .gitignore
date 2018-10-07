@@ -138,3 +138,4 @@ application.yml
 *.json
 # logback config (private credentials are there)
 src/main/resources/logback-spring.xml
+/.idea/jarRepositories.xml
