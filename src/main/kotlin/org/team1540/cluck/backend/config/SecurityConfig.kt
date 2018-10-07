@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
+import org.team1540.cluck.backend.AuthenticationConfig
 import org.team1540.cluck.backend.services.MongoUserDetailsService
 
 @Configuration

@@ -1,4 +1,4 @@
-package org.team1540.cluck.backend.config
+package org.team1540.cluck.backend
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationProperties

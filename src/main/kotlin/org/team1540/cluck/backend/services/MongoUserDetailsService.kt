@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import org.team1540.cluck.backend.config.AuthenticationConfig
+import org.team1540.cluck.backend.AuthenticationConfig
 import org.team1540.cluck.backend.data.AccessLevel
 import org.team1540.cluck.backend.data.Credential
 import org.team1540.cluck.backend.data.CredentialRepository

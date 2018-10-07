@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Conditional
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import org.team1540.cluck.backend.config.SheetsConfig
+import org.team1540.cluck.backend.SheetsConfig
 import org.team1540.cluck.backend.data.User
 import org.team1540.cluck.backend.interfaces.HourCountUpdater
 import org.team1540.cluck.backend.testconditional.OfflineConditional
