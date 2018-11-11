@@ -26,6 +26,8 @@ A full record of all clock-ins and clock-outs for each user are stored in the da
 
 The backend connects to Google Sheets, and outputs hour records for each person to a cells in a spreadsheet. For output to work properly, the name of each user in the spreadsheet must match their name in the user database.
 
+Additionally, an additional sheet on the spreadsheet is used as a display of who is logged in at any given time.
+
 ### Auto-Logout
 
 At 23:59:59 system time each day, the backend will check for any users who have logged in but did not log out. It will then log them out and send an email to their address in the database.
@@ -118,6 +120,7 @@ The backend has [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) as
 - `cluck.sheets.name-range`: The sheet range (e.g. A1:A20) containing the names of users.
 - `cluck.sheets.hours-col`:  The column of the spreadsheet containing the hours: the backend will update this column.
 - `cluck.sheets.hours-row-offset`: The row at which hour record cells start. This is to accomodate spreadsheets with header cells. For instance, if your sheet has two rows of header cells, then this would be 3.
+- `cluck.sheets.logged-in-sheet-name`: The name of the spreadsheet sheet to put logged-in user data on.
 - `cluck.auth.admin-password`: The password for the root admin account. This should be encoded as described in the Authentication section.
 - `cluck.autologout.enabled`: Whether to enable the autologout feature. Defaults to `true`.
 - `cluck.email.email-from`: The email that autologout emails should be sent from. Defaults to `"CLUCK" <cluck@example.com>`.

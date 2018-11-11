@@ -143,7 +143,8 @@ The backend uses Google Sheets to let users easily view their hour counts.
 4. Make sure that you have one column containing all of your user's names (exactly as they are when you enter them into the backend). This column can also contain headers and such, as long as the names are in one block. Make a note of the spreadsheet range (e.g. A1:A20) occupied by the names. 
 5. Figure out your row offset–the row number where the names start.
 6. Decide which column you want the backend to spit out hour counts into, and note its column letter. Note that the backend puts number in un-rounded, so you'll want to set up Google Sheets to display the numbers in that column to only a few decimal places.
-7. Share the sheet with the email address from step 1.12.
+7. Create a new subsheet and name it something like "Logged In Now". This will be used to display who is logged in at the moment. A list will be outputted in columns A and B, starting at row 2.
+8. Share the sheet with the email address from step 1.12.
 
 Add the following lines under the `cluck` section in your `application.yml`:
 
@@ -157,6 +158,7 @@ cluck:
     nameRange: <spreadsheet range from step 4>
     hoursRowOffset: <row offset from step 5>
     hoursCol: <column letter from step 6>
+    logged-in-sheet-name: <sheet name from step 7>
 ```
 
 ### SMTP Server
@@ -217,6 +219,7 @@ cluck:
     nameRange: <spreadsheet range from step 4>
     hoursRowOffset: <row offset from step 5>
     hoursCol: <column letter from step 6>
+    logged-in-sheet-name: <sheet name from step 7>
 ```
 
 ## Starting the Backend
