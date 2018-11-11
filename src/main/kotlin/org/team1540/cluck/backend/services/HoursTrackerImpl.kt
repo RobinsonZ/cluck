@@ -10,6 +10,7 @@ import org.team1540.cluck.backend.data.UserRepository
 import org.team1540.cluck.backend.interfaces.HourCountUpdater
 import org.team1540.cluck.backend.interfaces.HoursCounter
 import org.team1540.cluck.backend.interfaces.HoursTracker
+import org.team1540.cluck.backend.interfaces.LoggedInDisplayer
 
 @Service
 class HoursTrackerImpl : HoursTracker {
@@ -22,6 +23,9 @@ class HoursTrackerImpl : HoursTracker {
 
     @Autowired
     lateinit var hoursCounter: HoursCounter
+
+    @Autowired
+    lateinit var loggedInDisplayer: LoggedInDisplayer
 
     val logger = KotlinLogging.logger {}
 
@@ -47,6 +51,7 @@ class HoursTrackerImpl : HoursTracker {
 
         users.save(user.copy(clockEvents = user.clockEvents + ClockEvent(timeMs, true), inNow = true, lastEvent = timeMs))
         logger.debug { "Recorded clock-in for user $id at time $timeMs (${timeMs.convertToISODate()})" }
+        loggedInDisplayer.refreshLoggedInDisplay()
     }
 
     override fun recordClockOut(id: String, timeMs: Long) {
@@ -74,6 +79,7 @@ class HoursTrackerImpl : HoursTracker {
             hoursUpdater.setHours(savedUser, (it / 1000.0) / 3600.0) // convert milliseconds to hours
             logger.debug { "Clocked out user $id and updated hour count to $it ms (${(it / 1000.0) / 3600.0} hrs)" }
         }
+        loggedInDisplayer.refreshLoggedInDisplay()
     }
 }
 

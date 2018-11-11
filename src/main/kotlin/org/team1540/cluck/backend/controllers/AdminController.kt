@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*
 import org.team1540.cluck.backend.data.*
 import org.team1540.cluck.backend.interfaces.HourCountUpdater
 import org.team1540.cluck.backend.interfaces.HoursCounter
+import org.team1540.cluck.backend.interfaces.LoggedInDisplayer
 
 @RestController
 class AdminController {
@@ -22,10 +23,13 @@ class AdminController {
     private lateinit var timeCacheEntryRepository: TimeCacheEntryRepository
     @Autowired
     private lateinit var hoursCounter: HoursCounter
+    @Autowired
+    lateinit var loggedInDisplayer: LoggedInDisplayer
 
     private val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     private val logger = KotlinLogging.logger { }
+
 
     /**
      * Special data class for the request body so we don't encode the password in the URL like we would most parameters.
@@ -84,6 +88,7 @@ class AdminController {
         return if (userRepository.existsById(id)) {
             userRepository.deleteById(id)
             logger.debug { "Deleted user with ID $id" }
+            loggedInDisplayer.refreshLoggedInDisplay()
             ResponseEntity.ok().build<Any>()
         } else {
             logger.debug { "Failed to delete user with ID $id: no such user exists" }
@@ -147,6 +152,7 @@ class AdminController {
             hourCountUpdater.setHours(newUser, 0.0)
         }
         timeCacheEntryRepository.deleteAll()
+        loggedInDisplayer.refreshLoggedInDisplay()
         logger.info { "Reset complete" }
     }
 
@@ -171,7 +177,7 @@ class AdminController {
 
         userRepository.save(user.copy(clockEvents = sortedEvents.dropLast(1), inNow = false, lastEvent = sortedEvents.lastOrNull()?.timestamp))
         logger.debug { "Voided last clock-in for user $user" }
-
+        loggedInDisplayer.refreshLoggedInDisplay()
         return ResponseEntity.ok().build<Any>()
     }
 
@@ -195,6 +201,7 @@ class AdminController {
 
         userRepository.save(oldUser.copy(id = newId ?: oldUser.id, name = newName ?: oldUser.name, email = newEmail
                 ?: oldUser.email))
+        loggedInDisplayer.refreshLoggedInDisplay()
         logger.debug { "Successfully edited user ${newId ?: id}" }
 
         if (newId != null) {

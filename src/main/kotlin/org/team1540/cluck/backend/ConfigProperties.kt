@@ -28,6 +28,10 @@ class SheetsConfig {
      */
     lateinit var hoursCol: String
     /**
+     * The name of the sheet to use to display logged-in users.
+     */
+    lateinit var loggedInSheetName: String
+    /**
      * The row at which hours cells start. For instance, if your spreadsheet has two rows of headers
      * before the hours records, this would be 3.
      */
