@@ -8,4 +8,4 @@ set -ev
 
 ssh 1540 'kill `cat ~/cluck/cluck.pid`'
 sleep 3 # wait a bit for the process to shut down
-rsync -v build/libs/time-server-0.0.1-SNAPSHOT.jar 1540:cluck/cluck.jar
+rsync -v build/libs/cluck-backend-0.0.1-SNAPSHOT.jar 1540:cluck/cluck.jar
