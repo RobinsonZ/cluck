@@ -41,7 +41,7 @@ class StillLoggedInYeller {
                     }
                     .map { (user, lastEvent) ->
                         // delete that last entry from the database
-                        logger.debug { "User $user failed to logout at time ${lastEvent?.timestamp} (${lastEvent?.timestamp?.convertToISODate()})" }
+                        logger.debug { "User $user didn't logout at time ${lastEvent?.timestamp} (${lastEvent?.timestamp?.convertToISODate()})" }
                         users.save(user.copy(
                                 clockEvents = user.clockEvents - lastEvent!!,
                                 inNow = false,
