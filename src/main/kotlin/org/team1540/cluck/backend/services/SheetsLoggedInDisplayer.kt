@@ -47,7 +47,14 @@ class SheetsLoggedInDisplayer : LoggedInDisplayer {
                         } else {
                             listOf("", "")
                         }
-                    })
+                    }
+                    .sortedWith(Comparator { first, second ->
+                        when {
+                            first[0] == "" -> 1
+                            second[0] == "" -> -1
+                            else -> first[0].compareTo(second[0], ignoreCase = true)
+                        }
+                    }))
         }
         sheetsProvider.sheets.spreadsheets().values().update(config.sheet, "'${config.loggedInSheetName}'!A2", usersValueRange).setValueInputOption("RAW").execute()
         logger.debug { "Updated logged-in display" }
