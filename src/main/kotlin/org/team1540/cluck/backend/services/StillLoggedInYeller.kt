@@ -12,6 +12,7 @@ import org.team1540.cluck.backend.EmailConfig
 import org.team1540.cluck.backend.convertToISODate
 import org.team1540.cluck.backend.data.UserRepository
 import org.team1540.cluck.backend.interfaces.AnalyticsCollectionService
+import org.team1540.cluck.backend.interfaces.LoggedInDisplayer
 
 /**
  * Service to email users if they do not clock out on a certain day.
@@ -28,6 +29,8 @@ class StillLoggedInYeller {
     lateinit var emailSender: MailSender
     @Autowired
     lateinit var config: EmailConfig
+    @Autowired
+    lateinit var display: LoggedInDisplayer
 
     @Scheduled(cron = "59 59 23 * * ?") // 11:59:59 PM every day
     fun checkOutstandingLogins() {
@@ -36,9 +39,7 @@ class StillLoggedInYeller {
 
         try {
             emailSender.send(*users.findAllByInNow(true)
-                    .map {
-                        it to it.clockEvents.maxBy { e -> e.timestamp }
-                    }
+                    .map { it to it.clockEvents.maxBy { e -> e.timestamp } }
                     .map { (user, lastEvent) ->
                         // delete that last entry from the database
                         logger.debug { "User $user didn't logout at time ${lastEvent?.timestamp} (${lastEvent?.timestamp?.convertToISODate()})" }
@@ -57,7 +58,9 @@ class StillLoggedInYeller {
                             setSubject("Lab Hours")
                             setText("You didn't sign out of the lab today; these hours have been lost.")
                         }
-                    }.toTypedArray())
+                    }
+                    .also { if (it.isNotEmpty()) display.refreshLoggedInDisplay() }
+                    .toTypedArray())
         } catch (e: MailException) {
             logger.error(e) { "Failed to send emails" }
         }
