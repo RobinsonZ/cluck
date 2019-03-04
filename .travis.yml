@@ -1,9 +1,9 @@
 language: java
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-  - rm -f  $HOME/.gradle/caches/4.4/fileHashes/fileHashes.bin
-  - rm -f  $HOME/.gradle/caches/4.4/fileHashes/fileHashes.lock
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/4.4/fileHashes/fileHashes.bin
+- rm -f  $HOME/.gradle/caches/4.4/fileHashes/fileHashes.lock
 cache:
   directories:
   - "$HOME/.gradle/caches/"
@@ -11,4 +11,17 @@ cache:
 notifications:
   email: false
 env:
-  - TERM=dumb # to get gradle to not be weird
+  matrix:
+  - TERM=dumb
+  - secure: MjHUVgNt+4dX5PEH4ZuTLCFk31h9hlWMB+s8ex3b3SwZk4rOPkqwwawQ5P84OInOswDKZPROPgSqzZQk+5Vj2aO4YD1fqEK12IIKAVe1of9DKv1MAl70DR10RelHu9zpXTHKEI/R84uo17Mr2LSoD793w7/NWEd5QH572Qf9Jplkgxe6559aevc2CfY34xhPgpZtmziPUHYfHd0RpHoaRPWKs9pp2Wj0Weq6GuFBl5iRYbA2DLYAFoVAnUmgMO8drSn7nSstvj6h5GRZgWQJxSQwsVIO5BMiaHV7MmJZajphxauRnLC7yIUR88Ua1TSySiWOM8wENQcB0BYWoJukylo8bK2ggYF0N9M85MEiCz7l87PzbzE072drJ6F8UV6Upd4F7TpwLPIHntHtc3WAu63XdXhC1CPs0GXuh67LiJG1VyvVnLkPqQk2tcu1jA3ePYkSeTUqRY0skF7qJdLhF4MTIFmUIZPCjzIIqHM/ny7YiIwUmsEU6Fz76jbpbMoJmuZoU3DtWsamAa22XrEcfTBdAOncFYfHKJ3+GVxqaZqYQ+ouPf0k8Kuy77EHpxgTGaDNYgbPtfJXQiG2bcxKkofkz0pYuFmeZdJKB1zCdgCjH10+UyHdiTJ+/suiv0ZL1RmxzaB8hXCLzXJzWKy/jkwvHzgC6PHS4q/7xw+ViQU=
+before_deploy:
+  - npm install -g spectacle-docs
+  - spectacle swagger.yaml
+deploy:
+  - provider: pages # Swagger deployment to Github Pages
+    local-dir: public
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: true
+    on:
+      branch: master
